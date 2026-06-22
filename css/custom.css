@@ -188,6 +188,15 @@ body {
 
 .p-navigation__logo-link:hover { color: var(--ubuntu-orange); }
 
+/* Desktop: nav altijd zichtbaar, toggleknoppen verborgen */
+@media (min-width: 769px) {
+  .p-navigation__nav { display: block !important; }
+  .p-navigation__toggle--open,
+  .p-navigation__toggle--close { display: none !important; }
+  .p-navigation__items { display: flex; gap: 0; }
+  .p-navigation__link { color: #fff !important; padding: .5rem 1rem; }
+}
+
 .p-navigation__link.is-selected {
   color: var(--ubuntu-orange) !important;
   border-bottom: 2px solid var(--ubuntu-orange);
@@ -499,19 +508,53 @@ body {
 
   .hero-subtitle { font-size: .95rem; }
 
+  /* Hamburgerknoppen zichtbaar op mobiel */
+  .p-navigation__toggle--open {
+    display: flex !important;
+    align-items: center;
+    color: #fff;
+    font-size: 1.4rem;
+    text-decoration: none;
+    padding: .2rem .5rem;
+    cursor: pointer;
+  }
+  .p-navigation__toggle--close { display: none !important; }
+
   .p-navigation__nav {
     position: fixed;
     top: var(--nav-height);
     left: 0;
     right: 0;
-    background: #2c001e;
+    background: #2c001e !important;
     padding: 1rem 1.5rem;
-    display: none;
+    display: none !important;
+    z-index: 999;
+    box-shadow: 0 6px 20px rgba(0,0,0,.5);
   }
 
-  .p-navigation__nav.is-open { display: block; }
+  .p-navigation__nav.is-open {
+    display: block !important;
+  }
 
-  .p-navigation__items { flex-direction: column; }
+  .p-navigation__items {
+    flex-direction: column !important;
+    display: flex !important;
+    gap: 0;
+  }
+
+  .p-navigation__item {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .p-navigation__link {
+    color: #fff !important;
+    display: block !important;
+    padding: .75rem 0 !important;
+    font-size: 1rem;
+    text-decoration: none;
+  }
+
+  .p-navigation__link:hover { color: var(--ubuntu-orange) !important; }
 
   .markdown-content table { font-size: .78rem; }
 }
