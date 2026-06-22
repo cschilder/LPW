@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**LPW — Lichtgewicht Internet Protocollen** is a static HTML5 website documenting 25 lightweight internet protocols across two categories: 12 IoT/networking protocols (MQTT, CoAP, WebSocket, AMQP, HTTP/2, HTTP/3, XMPP, STOMP, DDS, LwM2M, MQTT-SN, LoRaWAN) and 13 "small internet" protocols (Gopher, Gemini, Spartan, Titan, Guppy, Nex, Finger, Twtxt, Nostr, Misfin, Gemlog, Glog, Bashblog). The UI is in Dutch; technical terms and code examples are in English.
+**LPW — Lichtgewicht Internet Protocollen** is a static HTML5 website documenting 25 lightweight internet protocols: 12 IoT/networking protocols (MQTT, CoAP, WebSocket, AMQP, HTTP/2, HTTP/3, XMPP, STOMP, DDS, LwM2M, MQTT-SN, LoRaWAN) and 13 "small internet" protocols (Gopher, Gemini, Spartan, Titan, Guppy, Nex, Finger, Twtxt, Nostr, Misfin, Gemlog, Glog, Bashblog). The UI is in Dutch; technical terms and code examples are in English.
 
 No build step — open `index.html` directly in a browser or serve with any static file server:
 
@@ -20,14 +20,13 @@ The site is a single-page application with no framework dependencies beyond CDN-
 ```
 index.html          Shell: navigation, hero, grid/comparison placeholders, script tags
 css/custom.css      Ubuntu colour variables, Start button, overlay, tabs, markdown styles
-js/protocols.js     PROTOCOLS object — 12 IoT/networking protocols with Markdown content
-js/protocols2.js    PROTOCOLS2 object — 13 small internet protocols; merged via Object.assign
+js/protocols.js     PROTOCOLS object — all 25 protocols with Markdown content
 js/app.js           Renders everything into the DOM; handles tabs, overlay, StackEdit, theme
 ```
 
 ### Data flow
 
-1. `protocols.js` defines `window.PROTOCOLS` — a keyed object where each entry has `id`, `name`, metadata fields, an inline SVG `icon`, and a `content` object with five Markdown strings (`beschrijving`, `werking`, `toepassingen`, `opties`, `voorbeeld`). `protocols2.js` defines `PROTOCOLS2` with additional protocols and merges them via `Object.assign(PROTOCOLS, PROTOCOLS2)` at the bottom of the file.
+1. `protocols.js` defines `window.PROTOCOLS` — a keyed object where each entry has `id`, `name`, metadata fields, an inline SVG `icon`, and a `content` object with five Markdown strings (`beschrijving`, `werking`, `toepassingen`, `opties`, `voorbeeld`).
 2. `app.js` reads `PROTOCOLS` on `DOMContentLoaded` and calls four builders: `bouwProtocolGrid()`, `bouwVergelijkingstabel()`, `bouwProtocolSecties()`, then inits overlay/tabs/theme/navigation.
 3. Each protocol section gets five tab panels. On load, Markdown is rendered via `marked.parse()` and syntax-highlighted with `Prism.highlightAllUnder()`.
 4. User edits go through StackEdit (`bewerkSectie(protocolId, sectionId)`): the editor opens with the current Markdown, `fileChange` events update the DOM live, and content is debounce-saved to `localStorage` under key `lpw_<protocolId>_<sectionId>`. On next load, localStorage takes precedence over the defaults in `protocols.js`.
@@ -46,9 +45,7 @@ js/app.js           Renders everything into the DOM; handles tabs, overlay, Stac
 
 ### Adding a new protocol
 
-Add one entry to either `js/protocols.js` or `js/protocols2.js` following the exact same shape as existing entries. The five `content` keys must be: `beschrijving`, `werking`, `toepassingen`, `opties`, `voorbeeld`. If adding to `protocols2.js`, place it inside the `PROTOCOLS2` object before the closing `};` — the `Object.assign` at the bottom merges it automatically. The site renders everything else automatically — no changes to `index.html` or `app.js` are needed.
-
-For a third extension file, define `const PROTOCOLS3 = { ... }` with the same entry shape and add `Object.assign(PROTOCOLS, PROTOCOLS3)` at the bottom, then include `<script src="js/protocols3.js"></script>` in `index.html` between `protocols2.js` and `app.js`.
+Add one entry to `js/protocols.js` inside the `PROTOCOLS` object, following the exact same shape as existing entries. The five `content` keys must be: `beschrijving`, `werking`, `toepassingen`, `opties`, `voorbeeld`. The site renders everything else automatically — no changes to `index.html` or `app.js` are needed.
 
 ### Vanilla Framework class names used
 
