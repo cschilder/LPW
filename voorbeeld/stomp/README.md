@@ -73,7 +73,28 @@ python3 -m http.server 8090
 
 Maak een account aan, ga naar **Verbinding**, vul je broker-URL in en verbind.
 
-## Een STOMP-broker om tegen te testen
+## Alleen een telefoon? Gebruik een gratis cloud-broker (CloudAMQP)
+
+Geen PC/Docker nodig — alles via je telefoonbrowser:
+
+1. Maak een gratis account op **cloudamqp.com** en een instance op het
+   gratis **"Little Lemur"**-plan.
+2. Open de instance → noteer **hostnaam**, **gebruiker**, **wachtwoord** en
+   **vhost** (op gedeelde plannen is de vhost gelijk aan de gebruikersnaam).
+3. Vul in de app onder **Verbinding** in:
+   - **WebSocket-URL:** `wss://JOUW-HOST.rmq.cloudamqp.com/ws`
+   - **Login:** je CloudAMQP-gebruiker
+   - **Passcode:** je CloudAMQP-wachtwoord
+   - **Virtual host:** je vhost  ← belangrijk, anders weigert de broker
+   - **Heart-beat:** `10000,10000`
+4. **Kanalen** → abonneer op `/topic/algemeen`; **Berichten** → verstuur naar
+   `/topic/algemeen`.
+
+> CloudAMQP gebruikt `wss://` (TLS) op poort 443, dus dit werkt ook door
+> firewalls/mobiele netwerken heen. De `Virtual host`-header is verplicht
+> bij CloudAMQP; bij een eigen lokale RabbitMQ laat je dat veld leeg.
+
+## Een eigen STOMP-broker om tegen te testen
 
 De app spreekt STOMP-**over-WebSocket**. Voorbeelden:
 

@@ -280,6 +280,7 @@ async function startApp() {
   $('#conn-url').value   = (await Store.get('conn_url'))   || 'ws://localhost:15674/ws';
   $('#conn-login').value = (await Store.get('conn_login')) || currentUser;
   $('#conn-pass').value  = stompPass || (await Store.get('conn_pass')) || '';
+  $('#conn-vhost').value = (await Store.get('conn_vhost')) || '';
   $('#conn-hb').value    = (await Store.get('conn_hb'))    || '10000,10000';
 
   $('#view-auth').hidden = true;
@@ -317,12 +318,14 @@ async function stompConnect(silent = false) {
   const url   = $('#conn-url').value.trim();
   const login = $('#conn-login').value.trim();
   const pass  = $('#conn-pass').value;
+  const vhost = $('#conn-vhost').value.trim();
   const hbRaw = $('#conn-hb').value.trim();
   if (!url) { if (!silent) toastInfo('Vul een WebSocket-URL in.'); return; }
 
   const hb = hbRaw.split(',').map(n => parseInt(n) || 0);
   await Store.set('conn_url', url);
   await Store.set('conn_login', login);
+  await Store.set('conn_vhost', vhost);
   await Store.set('conn_hb', hbRaw);
 
   $('#conn-dot').className = 'conn-dot conn-dot--wait';
@@ -330,7 +333,7 @@ async function stompConnect(silent = false) {
   $('#conn-status-text').textContent = 'verbinden…';
 
   try {
-    await client.connect({ url, login, passcode: pass, heartbeat: [hb[0] || 0, hb[1] || 0] });
+    await client.connect({ url, login, passcode: pass, host: vhost || undefined, heartbeat: [hb[0] || 0, hb[1] || 0] });
     connected = true;
     updateConnUI();
     toastInfo('Verbonden met de broker.');
