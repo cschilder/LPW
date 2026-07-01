@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>stomp</title>
+    <!-- Ubuntu font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Vanilla Framework -->
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.51.0.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="view-auth" hidden>
+    <div class="auth-wrap">
+        <div class="p-card auth-card">
+            <h2 class="p-card__title u-no-margin--bottom">stomp</h2>
+            <p class="p-text--small u-text--muted">STOMP-messaging client</p>
+            <div id="auth-error" class="p-notification--negative" hidden>
+                <div class="p-notification__content">
+                    <p class="p-notification__message" id="auth-error-msg"></p>
+                </div>
+            </div>
+            <label class="p-form__label" for="auth-user">Gebruikersnaam</label>
+            <input class="p-form-validation__input" type="text" id="auth-user"
+                   autocapitalize="none" autocomplete="username" placeholder="jouwNaam">
+            <label class="p-form__label" for="auth-pass">Wachtwoord</label>
+            <input class="p-form-validation__input" type="password" id="auth-pass"
+                   autocomplete="current-password">
+            <div id="auth-pass2-wrap" hidden>
+                <label class="p-form__label" for="auth-pass2">Wachtwoord bevestigen</label>
+                <input class="p-form-validation__input" type="password" id="auth-pass2"
+                       autocomplete="new-password">
+            </div>
+            <div class="u-sv1"></div>
+            <button class="p-button--positive" id="btn-login" style="width:100%">Inloggen</button>
+            <div class="u-sv--small"></div>
+            <button class="p-button" id="btn-register" style="width:100%">Account aanmaken</button>
+            <p class="p-text--small u-text--muted" style="margin-top:.6rem">
+                Accounts worden lokaal op dit toestel opgeslagen. Je gebruikersnaam
+                en wachtwoord worden gebruikt als STOMP <code>login</code>/<code>passcode</code>.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <span class="app-header__title" id="header-title">stomp</span>
+        <div class="app-header__right">
+            <span class="app-header__conn" id="header-conn">
+                <span class="conn-dot conn-dot--off" id="conn-dot"></span>
+                <span id="conn-label">offline</span>
+            </span>
+            <span class="app-header__user" id="header-user"></span>
+            <button class="app-header__notif-btn" id="notif-btn" title="Notificaties" aria-label="Notificaties">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span class="app-header__notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+            <select class="app-header__theme-select" id="theme-select" title="Thema kiezen">
+                <option value="ubuntu">Ubuntu</option>
+                <option value="dark">Donker</option>
+                <option value="suru">Suru</option>
+                <option value="aubergine">Aubergine</option>
+            </select>
+            <button class="p-button--base is-dense app-header__logout" id="logout-btn">Uitloggen</button>
+        </div>
+    </header>
+
+    <!-- BERICHTEN -->
+    <section id="view-timeline" class="view-content" hidden>
+
+        <!-- Compose: ingeklapt -->
+        <div id="compose-bar" class="compose-bar" role="button" tabindex="0">
+            <span class="compose-bar__placeholder">Bericht versturen (SEND) — tik om te schrijven…</span>
+        </div>
+
+        <!-- Compose: uitgeklapt -->
+        <div id="compose-expanded" class="p-card compose-expanded" hidden>
+            <div class="compose-subject-row">
+                <label class="p-form__label compose-subject-label" for="compose-subject">Naar</label>
+                <input class="p-form-validation__input compose-subject-input" type="text"
+                       id="compose-subject" placeholder="/topic/algemeen" maxlength="120"
+                       autocapitalize="none" autocorrect="off">
+            </div>
+            <div class="mention-wrap">
+                <textarea class="p-form-validation__input compose-textarea"
+                          id="compose" rows="4"
+                          placeholder="Berichttekst. Gebruik @naam om iemand te noemen."
+                          maxlength="2000"></textarea>
+                <div id="mention-dropdown" class="mention-dropdown" hidden></div>
+            </div>
+            <div class="compose-footer">
+                <span class="p-text--small u-text--muted" id="charcount">0/2000</span>
+                <button class="p-button--base is-dense" id="btn-icon-picker" title="Icoon invoegen" aria-label="Icoon invoegen">
+                    <i class="p-icon--plus"></i>
+                </button>
+                <div>
+                    <button class="p-button is-dense" id="btn-compose-cancel">Annuleren</button>
+                    <button class="p-button--positive is-dense" id="btn-post">Versturen</button>
+                </div>
+            </div>
+            <div id="icon-picker" class="icon-picker" hidden></div>
+        </div>
+
+        <!-- Destination-filter banner -->
+        <div id="tag-filter-bar" hidden>
+            <span class="tag-filter-bar__label">Filter: </span>
+            <span class="tag-filter-bar__tag" id="tag-filter-name"></span>
+            <button class="tag-filter-bar__clear" id="btn-clear-filter">× wissen</button>
+        </div>
+
+        <p class="p-text--small u-text--muted" id="timeline-status"></p>
+        <div id="timeline"></div>
+    </section>
+
+    <!-- KANALEN (subscriptions) -->
+    <section id="view-tags" class="view-content" hidden>
+        <h4 class="p-muted-heading">Nieuw kanaal abonneren</h4>
+        <div class="p-card">
+            <label class="p-form__label" for="sub-destination">Destination</label>
+            <input class="p-form-validation__input" type="text" id="sub-destination"
+                   autocapitalize="none" placeholder="/topic/algemeen of /queue/taken"
+                   style="width:100%">
+            <button class="p-button--positive is-dense" id="btn-subscribe">Abonneren</button>
+        </div>
+        <h4 class="p-muted-heading">Actieve abonnementen</h4>
+        <div id="tag-wall"></div>
+    </section>
+
+    <!-- VERBINDING -->
+    <section id="view-following" class="view-content" hidden>
+        <h4 class="p-muted-heading">STOMP-broker</h4>
+        <div class="p-card conn-form">
+            <label class="p-form__label" for="conn-url">WebSocket-URL</label>
+            <input class="p-form-validation__input" type="url" id="conn-url"
+                   autocapitalize="none" placeholder="ws://host:15674/ws">
+            <label class="p-form__label" for="conn-login">Login</label>
+            <input class="p-form-validation__input" type="text" id="conn-login"
+                   autocapitalize="none" placeholder="guest">
+            <label class="p-form__label" for="conn-pass">Passcode</label>
+            <input class="p-form-validation__input" type="password" id="conn-pass"
+                   placeholder="guest">
+            <label class="p-form__label" for="conn-hb">Heart-beat (ms, verstuur/ontvang)</label>
+            <input class="p-form-validation__input" type="text" id="conn-hb"
+                   placeholder="10000,10000" value="10000,10000">
+
+            <div class="conn-status-line">
+                Status: <strong id="conn-status-text">niet verbonden</strong>
+            </div>
+
+            <button class="p-button--positive" id="btn-connect" style="width:100%">Verbinden</button>
+            <div class="u-sv--small"></div>
+            <button class="p-button--negative" id="btn-disconnect" style="width:100%" hidden>Verbinding verbreken</button>
+        </div>
+
+        <h4 class="p-muted-heading">Voorbeeld-brokers</h4>
+        <div class="p-card">
+            <p class="p-text--small u-text--muted" style="margin:0">
+                <strong>RabbitMQ Web-STOMP:</strong> <code>ws://HOST:15674/ws</code> (login <code>guest</code>/<code>guest</code>)<br>
+                <strong>ActiveMQ:</strong> <code>ws://HOST:61614</code><br>
+                <strong>ActiveMQ Artemis:</strong> <code>ws://HOST:61614</code><br>
+                Voor TLS gebruik je <code>wss://</code>.
+            </p>
+        </div>
+    </section>
+
+    <!-- LOGBOEK -->
+    <section id="view-admin" class="view-content" hidden>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+            <h4 class="p-muted-heading" style="margin-bottom:0">STOMP-frames</h4>
+            <button class="p-button--base is-dense" id="btn-clear-log" style="margin:0">Wissen</button>
+        </div>
+        <p class="p-text--small u-text--muted">Groen = binnenkomend · oranje = uitgaand · rood = fout</p>
+        <div id="admin-list"></div>
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <nav id="bottom-nav">
+        <button data-view="timeline" class="active">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            Berichten
+        </button>
+        <button data-view="tags">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+            Kanalen
+        </button>
+        <button data-view="following">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            Verbinding
+        </button>
+        <button data-view="admin">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+            Logboek
+        </button>
+    </nav>
+
+</div><!-- /#app -->
+
+<!-- Toast-container -->
+<div id="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+<script src="js/stomp.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "appId": "space.r010.stomp",
+  "appName": "stomp",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#E95420",
+      "sound": "ubuntu_notify.wav"
+    }
+  }
+}

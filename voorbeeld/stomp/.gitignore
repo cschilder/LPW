@@ -1,0 +1,15 @@
+# Node
+node_modules/
+
+# Capacitor-gegenereerde native projecten (regenereer met `npx cap add android`)
+android/
+ios/
+
+# Build-output
+*.apk
+*.aab
+.gradle/
+build/
+
+# OS
+.DS_Store
