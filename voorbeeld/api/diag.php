@@ -10,8 +10,10 @@ $checks = [
     ['finger',  'tcp', 'happynetbox.com', 79],
     ['spartan', 'tcp', 'mozz.us', 300],
     ['nex',     'tcp', 'nightfall.city', 1900],
-    ['misfin',  'tcp', 'misfin.org', 1958],
-    ['amqp',    'tcp', 'rabbitmq.com', 5672],
+    // Voor misfin en amqp is er geen vaste publieke server; portquiz.net luistert op
+    // elke TCP-poort en laat dus zien of de webhost de poort naar buiten toestaat.
+    ['misfin',  'tcp', 'portquiz.net', 1958],
+    ['amqp',    'tcp', 'portquiz.net', 5672],
     ['https',   'tcp', 'cloudflare-quic.com', 443],
 ];
 $res = [];
