@@ -2746,48 +2746,37 @@ guppy://host:6775/pad
 ### Python — Guppy-client
 \`\`\`python
 import socket
-import struct
 
-def guppy_get(host, pad='/', poort=6775):
-    """Haal een Guppy-document op via UDP."""
-    url    = f'guppy://{host}{pad}'
-    seq    = 1
-    verzoek = struct.pack('>I', seq) + b' ' + url.encode() + b'\\r\\n'
-
+def guppy_get(url, timeout=3.0):
+    """Haal een Guppy-document op via UDP (poort 6775).
+    Pakketten: '<seq> <mime>\\r\\n<data>', '<seq+1>\\r\\n<data>', …, einde '<seq+n>\\r\\n'.
+    Elk pakket bevestig je met '<seq>\\r\\n' (ASCII-decimaal)."""
+    host = url.split('/')[2].split(':')[0]
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.settimeout(5)
+    sock.settimeout(timeout)
+    sock.sendto(f'{url}\\r\\n'.encode(), (host, 6775))
 
-    sock.sendto(verzoek, (host, poort))
-
-    gegevens = b''
-    try:
-        while True:
-            datagram, _ = sock.recvfrom(2048)
-            resp_seq = struct.unpack('>I', datagram[:4])[0]
-            inhoud   = datagram[5:]  # sla seq + spatie over
-
-            if resp_seq == seq and inhoud.strip() == b'':
-                break  # Einde-markering
-
-            gegevens += inhoud
-
-            # Bevestig dit datagram
-            bevestiging = struct.pack('>I', resp_seq) + b' \\r\\n'
-            sock.sendto(bevestiging, (host, poort))
-            seq = resp_seq + 1
-
-    except socket.timeout:
-        pass  # Geen meer data
-
+    chunks, first, mime, end = {}, None, '', None
+    while end is None or len(chunks) < end - first:
+        pakket, _ = sock.recvfrom(65535)
+        kop, _, data = pakket.partition(b'\\r\\n')
+        delen = kop.decode().split(' ', 1)
+        if first is None and delen[0] in ('1', '3', '4'):
+            return delen[0], delen[1], ''          # invoer / redirect / fout
+        seq = int(delen[0])
+        sock.sendto(f'{seq}\\r\\n'.encode(), (host, 6775))   # ack
+        if first is None and len(delen) == 2:
+            first, mime = seq, delen[1]
+        if data:
+            chunks[seq] = data
+        else:
+            end = seq                               # leeg pakket = einde
     sock.close()
+    return '2', mime, b''.join(chunks[k] for k in sorted(chunks)).decode()
 
-    # Header en body scheiden
-    header, _, body = gegevens.partition(b'\\r\\n')
-    return header.decode(), body.decode('utf-8', errors='replace')
-
-header, inhoud = guppy_get('guppy.example.tld', '/')
-print('Status:', header)
-print('Inhoud:', inhoud[:200])
+status, meta, inhoud = guppy_get('guppy://hd.206267.xyz/')
+print('Status:', status, meta)
+print(inhoud[:300])
 \`\`\``
     }
   },

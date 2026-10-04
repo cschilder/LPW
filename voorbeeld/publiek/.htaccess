@@ -1,0 +1,8 @@
+# Gepubliceerde bestanden (twtxt.txt, gemlog, phlog, blog) mogen gelezen worden
+Options -Indexes
+AddType text/plain .txt
+AddType text/gemini .gmi
+AddDefaultCharset utf-8
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>

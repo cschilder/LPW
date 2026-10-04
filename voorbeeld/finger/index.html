@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>finger — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="finger" data-titel="finger" data-sub="Finger-client (RFC 1288) via de PHP-brug">
+
+<section data-view="opvragen" data-label="Opvragen" data-icon="user">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="f-user">Gebruiker (leeg = wie is er online)</label>
+                <input class="kern-input" id="f-user" placeholder="bijv. ada" autocapitalize="none"></div>
+            <div><label class="kern-label" for="f-host">Server</label>
+                <input class="kern-input" id="f-host" value="happynetbox.com" autocapitalize="none"></div>
+        </div>
+        <label class="kern-muted" style="display:flex;gap:.4rem;align-items:center;margin-top:.4rem">
+            <input type="checkbox" id="f-verbose"> uitgebreid (<code>/W</code>-prefix)</label>
+        <div class="kern-btns"><button class="kern-btn" id="btn-finger">finger</button></div>
+    </div>
+    <div id="result"></div>
+</section>
+
+<section data-view="recent" data-label="Recent" data-icon="list">
+    <h4 class="p-muted-heading">Eerder opgevraagd</h4>
+    <div class="kern-card"><ul class="kern-list" id="recent"></ul></div>
+    <h4 class="p-muted-heading">Publieke finger-servers</h4>
+    <div class="kern-card"><ul class="kern-list" id="public"></ul></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Finger?</h4>
+    <div class="kern-card">
+        <p>Finger (1977, RFC 742 → RFC 1288) is het oudste "sociale" protocol: verbind met TCP-poort 79,
+        stuur een gebruikersnaam plus <code>CRLF</code>, en krijg informatie over die gebruiker terug —
+        inclusief diens <code>~/.plan</code>, het oerbegin van de statusupdate.</p>
+        <table class="kern-kv">
+            <tr><th><code>CRLF</code></th><td>wie is er ingelogd?</td></tr>
+            <tr><th><code>ada CRLF</code></th><td>info over gebruiker ada</td></tr>
+            <tr><th><code>/W ada CRLF</code></th><td>uitgebreide info</td></tr>
+        </table>
+        <p>Sockets lopen via de PHP-brug <code>api/finger.php</code>.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

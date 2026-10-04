@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>gemini — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="gemini" data-titel="gemini" data-sub="Gemini-browser met TOFU via de PHP-brug">
+
+<section data-view="bladeren" data-label="Bladeren" data-icon="browse">
+    <div class="kern-addr">
+        <button class="kern-btn kern-btn--ghost kern-fixed" id="btn-back" title="Terug">←</button>
+        <input class="kern-input" id="addr" value="gemini://geminiprotocol.net/" autocapitalize="none" spellcheck="false">
+        <button class="kern-btn kern-fixed" id="btn-go">Ga</button>
+    </div>
+    <div id="certbar" class="kern-muted" style="margin:-.2rem 0 .5rem"></div>
+    <div id="page" class="kern-card"><p class="kern-muted">Laden…</p></div>
+</section>
+
+<section data-view="bladwijzers" data-label="Capsules" data-icon="tag">
+    <h4 class="p-muted-heading">Bladwijzers</h4>
+    <div class="kern-card"><ul class="kern-list" id="bookmarks"></ul>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-bookmark">+ Huidige pagina</button></div>
+    </div>
+    <h4 class="p-muted-heading">Publieke capsules</h4>
+    <div class="kern-card"><ul class="kern-list" id="public"></ul></div>
+    <h4 class="p-muted-heading">Vertrouwde certificaten (TOFU)</h4>
+    <div class="kern-card"><table class="kern-kv" id="tofu"></table>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-tofu-reset">Alles vergeten</button></div>
+    </div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Gemini?</h4>
+    <div class="kern-card">
+        <p>De client opent TLS naar poort 1965 en stuurt de volledige URL plus <code>CRLF</code>.
+        Het antwoord is één headerregel <code>&lt;status&gt; &lt;meta&gt;</code>, bij succes gevolgd door de inhoud.</p>
+        <table class="kern-kv">
+            <tr><th>1x</th><td>invoer gevraagd (10, 11 = geheim)</td></tr>
+            <tr><th>2x</th><td>succes — meta is het MIME-type</td></tr>
+            <tr><th>3x</th><td>redirect (30 tijdelijk, 31 permanent)</td></tr>
+            <tr><th>4x</th><td>tijdelijke fout</td></tr>
+            <tr><th>5x</th><td>permanente fout (51 = niet gevonden)</td></tr>
+            <tr><th>6x</th><td>clientcertificaat vereist</td></tr>
+        </table>
+        <p class="kern-note">Gemini gebruikt <strong>TOFU</strong> (Trust On First Use): het eerste
+        certificaat van een host wordt onthouden. Verandert het later onverwacht, dan waarschuwt de app.</p>
+        <p>TLS en sockets lopen via de PHP-brug <code>api/gemini.php</code>; het Logboek toont het verkeer.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

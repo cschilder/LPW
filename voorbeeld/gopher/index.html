@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>gopher — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="gopher" data-titel="gopher" data-sub="Gopher-browser (RFC 1436) via de PHP-brug">
+
+<section data-view="bladeren" data-label="Bladeren" data-icon="browse">
+    <div class="kern-addr">
+        <button class="kern-btn kern-btn--ghost kern-fixed" id="btn-back" title="Terug">←</button>
+        <input class="kern-input" id="addr" value="gopher://gopher.floodgap.com/1/" autocapitalize="none" spellcheck="false">
+        <button class="kern-btn kern-fixed" id="btn-go">Ga</button>
+    </div>
+    <div id="page" class="kern-card"><p class="kern-muted">Laden…</p></div>
+</section>
+
+<section data-view="bladwijzers" data-label="Bladwijzers" data-icon="tag">
+    <h4 class="p-muted-heading">Bladwijzers</h4>
+    <div class="kern-card"><ul class="kern-list" id="bookmarks"></ul>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-bookmark">+ Huidige pagina</button></div>
+    </div>
+    <h4 class="p-muted-heading">Publieke gopherholes</h4>
+    <div class="kern-card"><ul class="kern-list" id="public"></ul></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt het?</h4>
+    <div class="kern-card">
+        <p>Gopher (1991) is een menu-gebaseerd protocol: de client stuurt een <em>selector</em>
+        gevolgd door <code>CRLF</code> over TCP-poort 70 en de server antwoordt met een document
+        of een <em>gophermap</em> (regels: <code>type naam⇥selector⇥host⇥poort</code>).</p>
+        <p>Je browser kan geen ruwe TCP-verbindingen openen, dus deze app gebruikt de
+        PHP-brug <code>api/gopher.php</code> op de server. In het <strong>Logboek</strong> zie je
+        precies welke bytes de brug verstuurde en ontving.</p>
+        <table class="kern-kv">
+            <tr><th>Type 0</th><td>tekstbestand</td></tr>
+            <tr><th>Type 1</th><td>menu (gophermap)</td></tr>
+            <tr><th>Type 7</th><td>zoekdienst (selector⇥zoekterm)</td></tr>
+            <tr><th>Type h</th><td>HTML/URL-link</td></tr>
+            <tr><th>Type i</th><td>informatieregel</td></tr>
+            <tr><th>Type g / I</th><td>afbeelding</td></tr>
+        </table>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

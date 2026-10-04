@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>misfin — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="misfin" data-titel="misfin" data-sub="Misfin-mail (Gemini-achtige e-mail over TLS)">
+
+<section data-view="opstellen" data-label="Opstellen" data-icon="mail">
+    <div class="kern-card" id="who"></div>
+    <div class="kern-card">
+        <label class="kern-label" for="m-to">Aan (mailbox@host)</label>
+        <input class="kern-input" id="m-to" placeholder="vriend@misfin.example" autocapitalize="none">
+        <label class="kern-label" for="m-body">Bericht (gemtext — eerste <code>#</code>-regel is het onderwerp)</label>
+        <textarea class="kern-textarea" id="m-body" rows="7"># Groeten uit de LPW-demo
+Hoi!
+
+Dit bericht is via Misfin verstuurd: TLS met een zelfgemaakt clientcertificaat als afzenderidentiteit.
+
+=> gemini://misfin.org/ Meer over Misfin</textarea>
+        <div class="kern-btns"><button class="kern-btn" id="btn-send">Versturen</button><span class="kern-muted" id="m-size"></span></div>
+    </div>
+    <div id="result"></div>
+</section>
+
+<section data-view="identiteit" data-label="Identiteit" data-icon="key">
+    <div class="kern-card">
+        <p>Bij Misfin bén je je certificaat: het bevat je naam (CN), je mailbox (UID) en je host
+        (subjectAltName). De ontvanger onthoudt je vingerafdruk (TOFU).</p>
+        <div class="kern-row">
+            <div><label class="kern-label" for="i-mailbox">Mailbox</label><input class="kern-input" id="i-mailbox" autocapitalize="none"></div>
+            <div><label class="kern-label" for="i-host">Jouw host</label><input class="kern-input" id="i-host" autocapitalize="none" placeholder="jouwdomein.nl"></div>
+        </div>
+        <label class="kern-label" for="i-name">Weergavenaam</label><input class="kern-input" id="i-name">
+        <div class="kern-btns"><button class="kern-btn" id="btn-identity">Identiteit (certificaat) maken</button></div>
+    </div>
+    <div id="identity"></div>
+</section>
+
+<section data-view="verzonden" data-label="Verzonden" data-icon="list">
+    <h4 class="p-muted-heading">Verzonden berichten</h4>
+    <div id="sent"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Misfin?</h4>
+    <div class="kern-card">
+        <p>Misfin (2023) is e-mail in Gemini-stijl. De afzender opent TLS naar poort 1958 <em>met een
+        clientcertificaat</em> en stuurt één regel (Misfin B: max. 2048 bytes):</p>
+        <pre class="kern-pre">misfin://mailbox@host Hoi! Dit is gemtext.⏎</pre>
+        <table class="kern-kv">
+            <tr><th>20 &lt;vingerafdruk&gt;</th><td>afgeleverd (vingerafdruk van de ontvanger)</td></tr>
+            <tr><th>30 / 31</th><td>tijdelijke / permanente redirect naar ander adres</td></tr>
+            <tr><th>4x</th><td>tijdelijke fout (44 = rustig aan)</td></tr>
+            <tr><th>5x</th><td>permanente fout (51 = mailbox bestaat niet)</td></tr>
+            <tr><th>6x</th><td>certificaatprobleem</td></tr>
+        </table>
+        <p class="kern-note">Je privésleutel staat alleen in deze browser en gaat bij verzenden eenmalig
+        via HTTPS naar de brug (<code>api/misfin.php</code>), die hem direct na gebruik wist.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

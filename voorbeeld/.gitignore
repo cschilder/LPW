@@ -1,0 +1,6 @@
+# Lokale configuratie met beheerwachtwoord-hash
+api/config.php
+# Gegenereerde publicaties (staan op de server, niet in git)
+publiek/*
+!publiek/.htaccess
+!publiek/README.md

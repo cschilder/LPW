@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>titan — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="titan" data-titel="titan" data-sub="Titan-uploader (schrijven naar Gemini-capsules)">
+
+<section data-view="schrijven" data-label="Schrijven" data-icon="edit">
+    <div class="kern-card">
+        <label class="kern-label" for="t-url">Doel (titan://host/pad)</label>
+        <input class="kern-input" id="t-url" value="titan://station.martinrue.com/" autocapitalize="none" spellcheck="false">
+        <div class="kern-row">
+            <div><label class="kern-label" for="t-token">Token</label><input class="kern-input" id="t-token" type="password" placeholder="toegangstoken van de server"></div>
+            <div class="kern-fixed" style="min-width:9rem"><label class="kern-label" for="t-mime">MIME-type</label>
+                <select class="kern-select" id="t-mime"><option>text/gemini</option><option>text/plain</option><option>text/markdown</option></select></div>
+        </div>
+        <label class="kern-label" for="t-body">Inhoud</label>
+        <textarea class="kern-textarea" id="t-body" rows="9"># Mijn eerste Titan-upload
+
+Deze pagina is geschreven in de LPW-demo en via Titan naar de capsule geüpload.
+
+* Gemtext is simpel
+* Eén regel per element
+
+=> gemini://geminiprotocol.net/ Meer over Gemini</textarea>
+        <div class="kern-btns"><button class="kern-btn" id="btn-upload">Uploaden via Titan</button>
+            <span class="kern-muted" id="t-size"></span></div>
+    </div>
+    <div id="result"></div>
+    <h4 class="p-muted-heading">Voorbeeld (gemtext)</h4>
+    <div class="kern-card" id="preview"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Titan?</h4>
+    <div class="kern-card">
+        <p>Titan is de upload-tegenhanger van Gemini (zelfde TLS-poort 1965). De parameters staan
+        als <code>;key=waarde</code> achter het pad:</p>
+        <pre class="kern-pre">titan://host/pad;size=123;mime=text/gemini;token=geheim⏎
+&lt;precies 123 bytes inhoud&gt;</pre>
+        <p>Het antwoord is een normale Gemini-header, meestal <code>30 gemini://host/pad</code> — een
+        redirect naar de net geüploade pagina. Die kun je direct openen in de Gemini-demo.</p>
+        <p>Servers met Titan-ondersteuning: Station-wiki's, Molly Brown, Agate (met plug-in), gmid.
+        TLS loopt via de PHP-brug <code>api/titan.php</code>.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

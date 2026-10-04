@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>guppy — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="guppy" data-titel="guppy" data-sub="Guppy-browser (Gemini-achtig over UDP)">
+
+<section data-view="bladeren" data-label="Bladeren" data-icon="browse">
+    <div class="kern-addr">
+        <button class="kern-btn kern-btn--ghost kern-fixed" id="btn-back" title="Terug">←</button>
+        <input class="kern-input" id="addr" value="guppy://hd.206267.xyz/" autocapitalize="none" spellcheck="false">
+        <button class="kern-btn kern-fixed" id="btn-go">Ga</button>
+    </div>
+    <div id="page" class="kern-card"><p class="kern-muted">Laden…</p></div>
+</section>
+
+<section data-view="bladwijzers" data-label="Bladwijzers" data-icon="tag">
+    <h4 class="p-muted-heading">Bladwijzers</h4>
+    <div class="kern-card"><ul class="kern-list" id="bookmarks"></ul>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-bookmark">+ Huidige pagina</button></div>
+    </div>
+    <h4 class="p-muted-heading">Publieke servers</h4>
+    <div class="kern-card"><ul class="kern-list" id="public"></ul></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Guppy?</h4>
+    <div class="kern-card">
+        <p>Guppy is Gemini-achtig, maar over <strong>UDP</strong> (poort 6775) zonder TLS. Omdat UDP
+        geen garanties geeft, regelt Guppy zelf de betrouwbaarheid:</p>
+        <table class="kern-kv">
+            <tr><th>Verzoek</th><td><code>guppy://host/pad CRLF</code></td></tr>
+            <tr><th>1e pakket</th><td><code>&lt;seq&gt; &lt;mime&gt; CRLF</code> + data</td></tr>
+            <tr><th>Volgende</th><td><code>&lt;seq+1&gt; CRLF</code> + data</td></tr>
+            <tr><th>Einde</th><td><code>&lt;seq+n&gt; CRLF</code> zonder data</td></tr>
+            <tr><th>Ack</th><td>client stuurt <code>&lt;seq&gt; CRLF</code> per pakket</td></tr>
+            <tr><th>Status</th><td><code>1</code> invoer · <code>3</code> redirect · <code>4</code> fout</td></tr>
+        </table>
+        <p>De PHP-brug <code>api/guppy.php</code> bevestigt elk pakket, ontdubbelt, sorteert op
+        volgnummer en verstuurt het verzoek opnieuw als er niets terugkomt. Het Logboek toont elk pakket.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="../_kern/js/browser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

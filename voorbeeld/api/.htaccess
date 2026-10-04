@@ -1,0 +1,5 @@
+# Interne bestanden van de bruggen niet via het web uitleveren
+<FilesMatch "^(_.*|config(\.example)?)\.php$">
+    Require all denied
+</FilesMatch>
+Options -Indexes
