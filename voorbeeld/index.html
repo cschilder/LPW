@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>LPW-demo's — 25 protocollen in actie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="_kern/css/kern.css">
+    <style>
+        body { background: var(--body-bg); color: var(--text); font-family: var(--font); }
+        .hub-head { background: var(--header-bg); color: var(--header-fg); padding: 1rem; }
+        .hub-head h1 { font-size: 1.5rem; margin: 0; padding: 0; }
+        .hub-head p { margin: .2rem 0 0; opacity: .8; font-size: .85rem; padding: 0; }
+        .hub-head a { color: var(--header-fg); }
+        .hub-main { max-width: 72rem; margin: 0 auto; padding: 1rem; }
+        .hub-legend .kern-badge { margin-right: .3rem; }
+        .hub-foot { color: var(--text-muted); font-size: .8rem; margin: 2rem 0 1rem; }
+    </style>
+</head>
+<body>
+<header class="hub-head">
+    <h1>LPW-demo's</h1>
+    <p>25 lichtgewicht protocollen, elk met een werkende app · <a href="../index.html">← terug naar de LPW-gids</a></p>
+</header>
+
+<main class="hub-main">
+    <div class="kern-card hub-legend">
+        <p style="margin:0 0 .4rem">Alle demo's delen één account (lokaal in je browser) en hebben een
+        <strong>Logboek</strong> met de echte frames en pakketten. Zo werken ze:</p>
+        <p style="margin:0"><span class="kern-badge kern-badge--ok">PHP-brug</span> de server spreekt het echte protocol (TCP, UDP of TLS) namens je browser
+        · <span class="kern-badge">browser</span> je browser praat zelf met de server (WebSocket)
+        · <span class="kern-badge kern-badge--warn">publiceert</span> schrijft echte bestanden naar <code>publiek/</code>
+        · <span class="kern-badge kern-badge--err">simulatie</span> geen publiek netwerk beschikbaar, wel echte bytes en crypto</p>
+    </div>
+
+    <section class="hub-section">
+        <h4 class="p-muted-heading">IoT &amp; netwerk</h4>
+        <div class="hub-grid" id="grid-iot"></div>
+    </section>
+    <section class="hub-section">
+        <h4 class="p-muted-heading">Het kleine internet</h4>
+        <div class="hub-grid" id="grid-klein"></div>
+    </section>
+
+    <p class="hub-foot">Zelf hosten? Zie <a href="STRATO.md">STRATO.md</a> · serverdiagnose: <a href="api/diag.php">api/diag.php</a> ·
+        broncode en meer uitleg: <a href="README.md">README.md</a></p>
+</main>
+
+<script>
+(() => {
+    // [map, protocol, omschrijving, schermafbeelding, soort]
+    const IOT = [
+        ['mqtt/www/', 'MQTT', 'Publiceren en abonneren met QoS, retain en wildcards', 'mqtt-berichten', 'browser'],
+        ['coap/', 'CoAP', 'Ontdekken (.well-known/core), CON-hertransmissie en blockwise', 'coap-ontdekken', 'brug'],
+        ['websocket/www/', 'WebSocket', 'Ruwe RFC 6455-client met groepschat', 'websocket-berichten', 'browser'],
+        ['amqp/', 'AMQP', 'Exchanges, queues, publisher confirms en Basic.Get', 'amqp-publiceren', 'brug'],
+        ['http2/', 'HTTP/2', 'Multiplexing tegen HTTP/1.1, echt gemeten', 'http2-waterval', 'brug'],
+        ['http3/', 'HTTP/3', 'Alt-Svc, QUIC-versieonderhandeling en h3-request', 'http3-quic', 'brug'],
+        ['xmpp/', 'XMPP', 'Account, contacten en chat over WebSocket', 'xmpp-chat', 'browser'],
+        ['stomp/www/', 'STOMP', 'STOMP 1.2-pub/sub met een eigen client', 'stomp-berichten', 'browser'],
+        ['dds/', 'DDS', 'QoS-matching, late joiners en echte RTPS-bytes', 'dds-simulatie', 'sim'],
+        ['lwm2m/', 'LwM2M', 'Een apparaat registreren bij een LwM2M-server', 'lwm2m-geregistreerd', 'brug'],
+        ['mqttsn/', 'MQTT-SN', 'Sensor publiceert via UDP naar een gateway', 'mqttsn-publiceren', 'brug'],
+        ['lorawan/', 'LoRaWAN', 'Uplinks bouwen en ontsleutelen, MIC en airtime', 'lorawan-uplink', 'sim'],
+    ];
+    const KLEIN = [
+        ['gopher/', 'Gopher', 'Gopherspace bladeren met bladwijzers', 'gopher-bladeren', 'brug'],
+        ['gemini/', 'Gemini', 'Capsules bladeren met TOFU-certificaten', 'gemini-bladeren', 'brug'],
+        ['spartan/', 'Spartan', 'Gemini zonder TLS, met uploads', 'spartan-gastenboek', 'brug'],
+        ['titan/', 'Titan', 'Bestanden naar een Gemini-capsule schrijven', 'titan-upload', 'brug'],
+        ['guppy/', 'Guppy', 'Gemini-achtig over UDP met acks', 'guppy-bladeren', 'brug'],
+        ['nex/', 'Nex', 'Pad + CRLF, verder niets', 'nex-bladeren', 'brug'],
+        ['finger/', 'Finger', 'Gebruikers en .plan-bestanden opvragen', 'finger-opvragen', 'brug'],
+        ['twtxt/', 'Twtxt', 'Feeds volgen en je eigen twtxt.txt publiceren', 'twtxt-tijdlijn', 'pub'],
+        ['nostr/', 'Nostr', 'Sleutels, notes en relays (NIP-01)', 'nostr-feed', 'browser'],
+        ['misfin/', 'Misfin', 'Mail versturen met een eigen identiteitscertificaat', 'misfin-opstellen', 'brug'],
+        ['gemlog/', 'Gemlog', 'Een gemlog met index.gmi en Atom-feed', 'gemlog-schrijven', 'pub'],
+        ['glog/', 'Phlog', 'Een phlog met gophermap', 'glog-schrijven', 'pub'],
+        ['bashblog/', 'Bashblog', 'Statische blog met tags en RSS', 'bashblog-blog', 'pub'],
+    ];
+    const SOORT = {
+        brug: '<span class="kern-badge kern-badge--ok">PHP-brug</span>',
+        browser: '<span class="kern-badge">browser</span>',
+        pub: '<span class="kern-badge kern-badge--warn">publiceert</span>',
+        sim: '<span class="kern-badge kern-badge--err">simulatie</span>',
+    };
+    const card = ([map, naam, sub, img, soort]) => `<a class="hub-card" href="${map}">
+        <img class="hub-card__img" src="screenshots/${img}.png" alt="${naam}-demo in actie" loading="lazy">
+        <span class="hub-card__title">${naam}</span>
+        <span class="hub-card__sub">${sub}</span>
+        <span class="hub-card__how">${SOORT[soort]}</span></a>`;
+    document.getElementById('grid-iot').innerHTML = IOT.map(card).join('');
+    document.getElementById('grid-klein').innerHTML = KLEIN.map(card).join('');
+    try { document.body.dataset.theme = localStorage.getItem('lpw_theme') || 'ubuntu'; } catch (_) {}
+})();
+</script>
+</body>
+</html>

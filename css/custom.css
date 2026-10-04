@@ -568,3 +568,6 @@ body {
   outline: 3px solid var(--ubuntu-orange);
   outline-offset: 2px;
 }
+
+/* Link naar de werkende demo-app (voorbeeld/) */
+.demo-link { margin: .75rem 0 0; }

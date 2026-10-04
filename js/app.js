@@ -257,6 +257,13 @@ const SECTIE_LABELS = {
   voorbeeld:    'Voorbeeld'
 };
 
+// Werkende demo-app per protocol in voorbeeld/ (de drie Capacitor-apps staan in www/)
+const DEMO_WWW = ['mqtt', 'websocket', 'stomp'];
+function demoUrl(id) {
+  if (!PROTOCOLS[id]) return null;
+  return `voorbeeld/${id}/${DEMO_WWW.includes(id) ? 'www/' : ''}`;
+}
+
 function bouwProtocolSecties() {
   const container = document.getElementById('protocol-sections');
   if (!container) return;
@@ -321,6 +328,7 @@ function bouwProtocolSecties() {
             <div class="protocol-card__tags" style="margin-top:.5rem">
               ${p.tags.map(t => `<span class="protocol-tag" style="border-color:${p.color}60; color:${p.color}">${t}</span>`).join('')}
             </div>
+            ${demoUrl(p.id) ? `<a class="p-button--brand is-small demo-link" href="${demoUrl(p.id)}">▶ Live demo</a>` : ''}
           </div>
         </div>
 

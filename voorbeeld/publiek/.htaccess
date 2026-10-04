@@ -6,3 +6,7 @@ AddDefaultCharset utf-8
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
 </IfModule>
+# Hier wordt alleen data gepubliceerd: nooit scripts uitvoeren
+<FilesMatch "\.(php[0-9]?|phtml|phar|cgi|pl|py|sh)$">
+    Require all denied
+</FilesMatch>
