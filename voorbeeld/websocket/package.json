@@ -1,0 +1,22 @@
+{
+  "name": "websocket-app",
+  "version": "1.0.0",
+  "description": "WebSocket-client (RFC 6455) met Vanilla Framework styling (zusje van de twtxt-/stomp-app)",
+  "private": true,
+  "scripts": {
+    "add:android": "cap add android",
+    "sync": "cap sync",
+    "open:android": "cap open android",
+    "run:android": "cap run android",
+    "build:apk": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/preferences": "^8.0.0",
+    "@capacitor/local-notifications": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.0.0"
+  }
+}
