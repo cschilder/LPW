@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>twtxt — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="twtxt" data-titel="twtxt" data-sub="twtxt: microbloggen met een tekstbestand op je eigen domein">
+
+<section data-view="tijdlijn" data-label="Tijdlijn" data-icon="chat">
+    <div id="compose-bar" class="compose-bar" role="button" tabindex="0">
+        <span class="compose-bar__placeholder">Nieuwe twt — tik om te schrijven…</span>
+    </div>
+    <div id="compose-expanded" class="kern-card" hidden>
+        <textarea class="kern-textarea" id="t-text" rows="3" maxlength="500" placeholder="Wat speelt er?"></textarea>
+        <div class="compose-footer"><span class="kern-muted" id="t-count">0/500</span>
+            <div><button class="kern-btn kern-btn--ghost" id="btn-cancel">Annuleren</button> <button class="kern-btn" id="btn-twt">Publiceren</button></div></div>
+    </div>
+    <p class="kern-muted" id="tl-status"></p>
+    <div id="timeline"></div>
+</section>
+
+<section data-view="volgen" data-label="Volgen" data-icon="user">
+    <div class="kern-card">
+        <label class="kern-label" for="f-url">URL van een twtxt.txt</label>
+        <div class="kern-addr" style="margin:0"><input class="kern-input" id="f-url" placeholder="https://iemand.nl/twtxt.txt" autocapitalize="none" spellcheck="false">
+            <button class="kern-btn kern-fixed" id="btn-follow">Volgen</button></div>
+    </div>
+    <h4 class="p-muted-heading">Je volgt</h4>
+    <div id="following"></div>
+    <h4 class="p-muted-heading">Ontdekken</h4>
+    <div class="kern-card"><ul class="kern-list" id="discover"></ul></div>
+</section>
+
+<section data-view="mijn" data-label="Mijn feed" data-icon="rss">
+    <div class="kern-card" id="my-head"></div>
+    <div id="my-twts"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt twtxt?</h4>
+    <div class="kern-card">
+        <p>twtxt (2016) is microbloggen zonder platform: je "account" is één tekstbestand op een webserver.
+        Elke regel is een bericht:</p>
+        <pre class="kern-pre"># nick = ada
+# url  = https://jouwdomein.nl/voorbeeld/publiek/twtxt.txt
+2026-10-04T09:12:00+02:00⇥Goedemorgen, twtxt!
+2026-10-04T10:30:00+02:00⇥@&lt;lin https://lin.nl/twtxt.txt&gt; leuk idee!</pre>
+        <p><strong>Volgen</strong> = de URL van iemands bestand toevoegen; je client haalt alle bestanden op en
+        sorteert ze tot één tijdlijn. Vermeldingen hebben de vorm <code>@&lt;nick url&gt;</code>.</p>
+        <p class="kern-note">Publiceren schrijft naar <code>voorbeeld/publiek/twtxt.txt</code> op deze server en vereist het
+        beheerwachtwoord uit <code>api/config.php</code>. Feeds ophalen gaat via de PHP-brug <code>api/twtxt.php</code>
+        (browsers mogen andermans bestanden meestal niet direct lezen vanwege CORS).</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>bashblog — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="bashblog" data-titel="bashblog" data-sub="Bashblog-stijl statische blog genereren">
+
+<section data-view="schrijven" data-label="Schrijven" data-icon="edit">
+    <div class="kern-card">
+        <label class="kern-label" for="b-title">Titel</label><input class="kern-input" id="b-title" value="Hallo vanaf mijn bashblog">
+        <label class="kern-label" for="b-body">Tekst</label>
+        <textarea class="kern-textarea" id="b-body" rows="9">Dit is **Markdown**: `code`, [links](https://github.com/cfenollosa/bashblog) en lijsten.
+
+## Waarom statisch?
+- snel en goedkoop te hosten (ook op Strato)
+- *geen* database, niets om te hacken
+- alles is gewoon HTML
+
+> Eén script, een map met bestanden, klaar.</textarea>
+        <label class="kern-label" for="b-tags">Tags (komma-gescheiden)</label><input class="kern-input" id="b-tags" value="lpw, klein-internet">
+        <div class="kern-btns"><button class="kern-btn" id="btn-publish">Publiceren</button></div>
+    </div>
+    <h4 class="p-muted-heading">Voorbeeld</h4>
+    <div class="kern-card" id="b-preview"></div>
+</section>
+
+<section data-view="mijn" data-label="Mijn blog" data-icon="rss">
+    <div class="kern-card">
+        <p style="margin:0">Jouw blog staat op:</p>
+        <pre class="kern-pre" id="m-url"></pre>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-copy-url">URL kopiëren</button></div>
+    </div>
+    <div class="kern-card">
+        <label class="kern-label" for="m-title">Naam van je blog</label><input class="kern-input" id="m-title">
+        <label class="kern-label" for="m-desc">Omschrijving</label><input class="kern-input" id="m-desc">
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost" id="btn-settings">Opslaan &amp; index vernieuwen</button></div>
+    </div>
+    <h4 class="p-muted-heading">Berichten</h4>
+    <div id="m-posts"></div>
+    <h4 class="p-muted-heading">Gegenereerde bestanden</h4>
+    <div class="kern-card"><ul class="kern-list" id="m-files"></ul></div>
+</section>
+
+<section data-view="bekijken" data-label="Bekijken" data-icon="browse">
+    <div class="kern-card"><a class="kern-btn kern-btn--ghost kern-btn--small" id="v-open" target="_blank" rel="noopener">In nieuw tabblad openen ↗</a></div>
+    <iframe id="v-frame" title="Gegenereerde blog" style="width:100%;height:70vh;border:1px solid var(--border);border-radius:4px;background:#fff"></iframe>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt bashblog?</h4>
+    <div class="kern-card">
+        <p><a class="kern-link" href="https://github.com/cfenollosa/bashblog" target="_blank" rel="noopener">bashblog</a>
+        is één Bash-script dat van Markdown-bestanden een complete statische blog maakt: een pagina per bericht,
+        een <code>index.html</code>, <code>all_posts.html</code>, tagpagina&#39;s en een RSS-feed.</p>
+        <p>Deze demo doet hetzelfde op de server in PHP en zet het resultaat in <code>voorbeeld/publiek/blog/</code> —
+        op Strato is je blog dus meteen live. Markdown wordt veilig omgezet (alle HTML in de bron wordt ge-escaped,
+        <code>javascript:</code>-links worden geblokkeerd).</p>
+        <pre class="kern-pre">publiek/blog/
+├── index.html          laatste 10 berichten
+├── 2026-10-04-titel.html
+├── all_posts.html
+├── tag_markdown.html
+└── feed.rss</pre>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="../_kern/js/blogapp.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

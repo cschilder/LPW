@@ -903,6 +903,7 @@ body {
 .kern-type {
     display: inline-block;
     min-width: 3.1rem;
+    margin-right: .5rem;
     font-family: 'Ubuntu Mono', monospace;
     font-size: .72rem;
     color: var(--text-muted);

@@ -58,6 +58,22 @@
     set: (key, val) => ls.set(`lpw_shared_${Kern.user}_${key}`, JSON.stringify(val)),
   };
 
+  // Beheerwachtwoord voor de publicatie-demo's: alleen voor deze browsersessie (sessionStorage),
+  // gedeeld door twtxt/gemlog/phlog/bashblog. Wordt nooit in localStorage bewaard.
+  Kern.admin = {
+    get: () => { try { return sessionStorage.getItem('lpw_admin') || ''; } catch (_) { return ''; } },
+    set: (v) => { try { sessionStorage.setItem('lpw_admin', v); } catch (_) {} },
+  };
+  // Vraagt het beheerwachtwoord als het er nog niet is
+  Kern.needAdmin = async () => {
+    let pw = Kern.admin.get();
+    if (!pw) {
+      pw = await Kern.ask('Beheerwachtwoord (uit api/config.php) om te publiceren:', { secret: true });
+      if (pw) Kern.admin.set(pw);
+    }
+    return pw || null;
+  };
+
   // ---------- iconen (Material-paden, zelfde stijl als twtxt) ----------
   const ICON = {
     chat: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z',

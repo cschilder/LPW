@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>gemlog — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="gemlog" data-titel="gemlog" data-sub="Gemlog schrijven, publiceren en lezen">
+
+<section data-view="schrijven" data-label="Schrijven" data-icon="edit">
+    <div class="kern-card">
+        <label class="kern-label" for="b-title">Titel</label><input class="kern-input" id="b-title" value="Mijn eerste gemlogbericht">
+        <label class="kern-label" for="b-body">Tekst</label>
+        <textarea class="kern-textarea" id="b-body" rows="9">Gemini dwingt eenvoud af: één link per regel, geen inline opmaak, geen scripts.
+
+## Waarom een gemlog?
+* Je schrijft voor lezers, niet voor algoritmes
+* Elke capsule-lezer kan je volgen via index.gmi
+
+> Minder is meer.
+
+=> gemini://geminiprotocol.net/ Project Gemini</textarea>
+        <label class="kern-label" for="b-tags">Tags (komma-gescheiden)</label><input class="kern-input" id="b-tags" value="lpw, klein-internet">
+        <div class="kern-btns"><button class="kern-btn" id="btn-publish">Publiceren</button></div>
+    </div>
+    <h4 class="p-muted-heading">Voorbeeld</h4>
+    <div class="kern-card" id="b-preview"></div>
+</section>
+
+<section data-view="mijn" data-label="Mijn blog" data-icon="rss">
+    <div class="kern-card">
+        <p style="margin:0">Jouw blog staat op:</p>
+        <pre class="kern-pre" id="m-url"></pre>
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-copy-url">URL kopiëren</button></div>
+    </div>
+    <div class="kern-card">
+        <label class="kern-label" for="m-title">Naam van je blog</label><input class="kern-input" id="m-title">
+        <label class="kern-label" for="m-desc">Omschrijving</label><input class="kern-input" id="m-desc">
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost" id="btn-settings">Opslaan &amp; index vernieuwen</button></div>
+    </div>
+    <h4 class="p-muted-heading">Berichten</h4>
+    <div id="m-posts"></div>
+    <h4 class="p-muted-heading">Gegenereerde bestanden</h4>
+    <div class="kern-card"><ul class="kern-list" id="m-files"></ul></div>
+</section>
+
+<section data-view="lezen" data-label="Lezen" data-icon="browse">
+    <div class="kern-card kern-addr" style="margin-bottom:.6rem">
+        <input class="kern-input" id="r-url" autocapitalize="none" spellcheck="false">
+        <button class="kern-btn kern-fixed" id="btn-read">Lees</button>
+    </div>
+    <div id="r-out"></div>
+    <h4 class="p-muted-heading">Suggesties</h4>
+    <div class="kern-card"><ul class="kern-list" id="r-list"></ul></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt een gemlog?</h4>
+    <div class="kern-card">
+        <p>Een gemlog is een blog in Geminispace: een map met <code>.gmi</code>-bestanden en een
+        <code>index.gmi</code> met per bericht één regel in het <strong>abonnementsformaat</strong>:</p>
+        <pre class="kern-pre">=> 2026-10-04-mijn-bericht.gmi 2026-10-04 Mijn bericht</pre>
+        <p>Clients als Lagrange en aggregators als Antenna herkennen zulke regels (link + datum + titel) en
+        kunnen je zo volgen — zonder RSS.</p>
+        <p class="kern-note">Deze demo genereert de bestanden in <code>voorbeeld/publiek/gemlog/</code> (plus een
+        Atom-feed). Strato kan zelf geen Gemini serveren (poort 1965); kopieer de map naar je capsule, bijv.
+        <code>rsync -av publiek/gemlog/ capsule:/srv/gemini/gemlog/</code>. Het tabblad <em>Lezen</em> haalt
+        echte gemlogs op via de Gemini-brug.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="../_kern/js/blogapp.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
