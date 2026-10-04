@@ -20,7 +20,7 @@ app rechtstreeks met een **STOMP-broker over WebSocket**.
 | Admin | **Logboek** — alle ruwe STOMP-frames (in/uit) live |
 
 ### Overgenomen features (identiek aan twtxt)
-- Vanilla Framework 4.51 + Ubuntu-lettertype
+- Vanilla Framework 4.59 + Ubuntu-lettertype
 - 4 thema's: **Ubuntu, Donker, Suru, Aubergine**
 - In-app **toasts** + **Android-systeemnotificaties** (Capacitor LocalNotifications)
 - Notificatiebadge + **Ubuntu-notificatiegeluid** (Web Audio API)
@@ -36,7 +36,7 @@ header-escaping en **heart-beating** (spec §3.7).
 
 ## Bouwen tot APK
 
-Vereist: Node.js, een Android SDK en JDK 17+. Exact dezelfde workflow als twtxt.
+Vereist: Node.js, een Android SDK en JDK 21+. Exact dezelfde workflow als twtxt.
 
 ```bash
 cd voorbeeld/stomp
@@ -121,7 +121,7 @@ naar dezelfde destination en het verschijnt in **Berichten**.
 ```
 voorbeeld/stomp/
 ├── capacitor.config.json      # app-ID space.r010.stomp, plugins
-├── package.json               # Capacitor 7 + plugins
+├── package.json               # Capacitor 8 + plugins
 ├── .gitignore
 └── www/
     ├── index.html             # views: Berichten / Kanalen / Verbinding / Logboek
