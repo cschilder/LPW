@@ -362,7 +362,7 @@ body {
 /* ============================================================
    KANAAL-FILTER BANNER
    ============================================================ */
-#tag-filter-bar {
+#tag-filter-bar:not([hidden]) {
     display: flex;
     align-items: center;
     gap: .4rem;
