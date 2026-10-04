@@ -1455,7 +1455,7 @@ for sample in reader.take():
 
   lwm2m: {
     id: 'lwm2m', name: 'LwM2M', fullName: 'Lightweight Machine to Machine',
-    version: 'LwM2M 1.2', standard: 'OMA SpecWorks',
+    version: 'LwM2M 1.2.2 (2024)', standard: 'OMA SpecWorks',
     color: '#2E7D32', transport: 'CoAP / UDP', port: '5683 / 5684 (DTLS)',
     model: 'Client-Server (apparaatbeheer)', qos: 'CoAP CON/NON', security: 'DTLS / OSCORE',
     category: 'IoT Device Management', idealFor: 'Apparaatbeheer, firmware-updates, bootstrapping',
@@ -2130,7 +2130,7 @@ pygopherd --host 0.0.0.0 --port 70 /srv/gopher/
 
   gemini: {
     id: 'gemini', name: 'Gemini', fullName: 'Gemini Protocol',
-    version: 'Specificatie v0.24', standard: 'Gemini Project (community)',
+    version: 'Specificatie v0.24.1 (2024)', standard: 'Gemini Project (community)',
     color: '#4F46E5', transport: 'TCP + TLS', port: '1965',
     model: 'Client-Server (document pull)', qos: 'Geen', security: 'TLS 1.2+ (verplicht)',
     category: 'Small Internet', idealFor: 'Privacyvriendelijk lezen, persoonlijke capsules, tekst-first content',
