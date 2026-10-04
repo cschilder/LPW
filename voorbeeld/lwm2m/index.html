@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>lwm2m — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="lwm2m" data-titel="lwm2m" data-sub="LwM2M-apparaat (registreren bij een LwM2M-server)">
+
+<section data-view="apparaat" data-label="Apparaat" data-icon="radio">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="l-host">LwM2M-server</label>
+                <input class="kern-input" id="l-host" value="leshan.eclipseprojects.io" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:6rem"><label class="kern-label" for="l-port">Poort</label>
+                <input class="kern-input" id="l-port" value="5683" inputmode="numeric"></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="l-ep">Endpointnaam</label><input class="kern-input" id="l-ep" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:6rem"><label class="kern-label" for="l-lt">Lifetime (s)</label><input class="kern-input" id="l-lt" value="300" inputmode="numeric"></div>
+        </div>
+        <label class="kern-label">Aangeboden objecten</label>
+        <div id="l-objects" class="kern-row" style="gap:.2rem .8rem"></div>
+        <div class="kern-btns">
+            <button class="kern-btn" id="btn-lw-register">Registreren</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-lw-update" disabled>Update</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-lw-deregister" disabled>Deregistreren</button>
+        </div>
+    </div>
+    <div id="state"></div>
+    <div id="result"></div>
+</section>
+
+<section data-view="objecten" data-label="Objecten" data-icon="cube">
+    <div class="kern-card">
+        <p>LwM2M modelleert een apparaat als <em>objecten</em> → <em>instanties</em> → <em>resources</em>,
+        geadresseerd als <code>/object/instantie/resource</code>.</p>
+        <label class="kern-label" for="o-temp">Gemeten temperatuur (/3303/0/5700): <strong id="o-temp-v"></strong></label>
+        <input type="range" id="o-temp" min="-10" max="40" step="0.1" value="21.5" style="width:100%">
+    </div>
+    <div id="model"></div>
+    <h4 class="p-muted-heading">Zo stuurt het apparaat dit naar de server (SenML-JSON)</h4>
+    <div class="kern-card"><pre class="kern-pre" id="senml"></pre></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt LwM2M?</h4>
+    <div class="kern-card">
+        <p>LwM2M (OMA SpecWorks, v1.2) is apparaatbeheer bovenop CoAP. Een apparaat registreert zich bij
+        de server met een CoAP-<code>POST</code> naar <code>/rd</code>:</p>
+        <pre class="kern-pre">POST /rd?ep=lpw-demo&amp;lt=300&amp;lwm2m=1.1&amp;b=U
+Content-Format: 40 (link-format)
+&lt;/&gt;;rt="oma.lwm2m";ct=11543,&lt;/1/0&gt;,&lt;/3/0&gt;,&lt;/3303/0&gt;</pre>
+        <table class="kern-kv">
+            <tr><th>Register</th><td><code>2.01 Created</code> + Location-Path <code>/rd/&lt;id&gt;</code></td></tr>
+            <tr><th>Update</th><td><code>POST /rd/&lt;id&gt;</code> → <code>2.04</code> (vóór lifetime verloopt)</td></tr>
+            <tr><th>Deregister</th><td><code>DELETE /rd/&lt;id&gt;</code> → <code>2.02</code></td></tr>
+        </table>
+        <p class="kern-note">De standaardserver is de publieke <strong>Eclipse Leshan-sandbox</strong>; na registreren
+        zie je je apparaat op <a class="kern-link" href="https://leshan.eclipseprojects.io/" target="_blank" rel="noopener">leshan.eclipseprojects.io</a>.
+        Omdat de PHP-brug per verzoek draait (geen langlopend proces), kan de server het apparaat daarna
+        niet zelf uitlezen; registratie, update en deregistratie zijn wél volledig echt.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

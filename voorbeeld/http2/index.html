@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>http2 — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="http2" data-titel="http2" data-sub="HTTP/2-multiplexing vs HTTP/1.1, echt gemeten">
+
+<section data-view="meten" data-label="Meten" data-icon="gauge">
+    <div class="kern-card">
+        <label class="kern-label" for="h-urls">URL's (één per regel, max. 6 — liefst dezelfde host)</label>
+        <textarea class="kern-textarea" id="h-urls" rows="5">https://nghttp2.org/
+https://nghttp2.org/documentation/
+https://nghttp2.org/blog/
+https://nghttp2.org/documentation/package_README.html
+https://nghttp2.org/stylesheets/screen.css</textarea>
+        <div class="kern-btns">
+            <button class="kern-btn" data-mode="h2">HTTP/2</button>
+            <button class="kern-btn kern-btn--ghost" data-mode="h1-1">HTTP/1.1 · 1 verbinding</button>
+            <button class="kern-btn kern-btn--ghost" data-mode="h1-6">HTTP/1.1 · 6 verbindingen</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-all">Alle drie vergelijken</button>
+        </div>
+    </div>
+    <div id="compare"></div>
+    <div id="runs"></div>
+</section>
+
+<section data-view="browser" data-label="Jouw browser" data-icon="browse">
+    <div class="kern-card">
+        <p>Je browser rapporteert via de <em>Resource Timing API</em> (<code>nextHopProtocol</code>) welk
+        protocol hij voor elk bestand van déze pagina gebruikte:</p>
+        <table class="kern-kv" id="nexthop"></table>
+        <p class="kern-muted">h2 = HTTP/2 · h3 = HTTP/3 (QUIC) · http/1.1 = HTTP/1.1. Externe bestanden tonen
+        alleen een waarde als de server dat toestaat (Timing-Allow-Origin).</p>
+    </div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Waarom HTTP/2?</h4>
+    <div class="kern-card">
+        <p>HTTP/1.1 kan per TCP-verbinding maar één verzoek tegelijk afhandelen: het volgende moet wachten
+        (<em>head-of-line blocking</em>). Browsers openen daarom tot 6 verbindingen per host — elk met een eigen
+        TCP- en TLS-handshake.</p>
+        <p>HTTP/2 (RFC 9113) verpakt alles in binaire <strong>frames</strong> op genummerde <strong>streams</strong>,
+        zodat tientallen verzoeken tegelijk over <strong>één</strong> verbinding gaan (multiplexing), met
+        HPACK-headercompressie. De onderhandeling gebeurt in de TLS-handshake via ALPN (<code>h2</code>).</p>
+        <p>De PHP-brug <code>api/http2.php</code> haalt de URL's parallel op met curl en telt de gebruikte
+        TCP-verbindingen via de lokale poortnummers.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

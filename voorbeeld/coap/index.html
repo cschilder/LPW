@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>coap — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="coap" data-titel="coap" data-sub="CoAP-client (RFC 7252) via de PHP-brug">
+
+<section data-view="verzoek" data-label="Verzoek" data-icon="send">
+    <div class="kern-card">
+        <label class="kern-label" for="c-url">URL</label>
+        <input class="kern-input" id="c-url" value="coap://coap.me/hello" autocapitalize="none" spellcheck="false">
+        <div class="kern-row">
+            <div><label class="kern-label" for="c-method">Methode</label>
+                <select class="kern-select" id="c-method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select></div>
+            <div><label class="kern-label" for="c-type">Type</label>
+                <select class="kern-select" id="c-type"><option value="CON">CON (bevestigd)</option><option value="NON">NON (onbevestigd)</option></select></div>
+            <div><label class="kern-label" for="c-format">Content-Format</label>
+                <select class="kern-select" id="c-format"><option value="0">0 text/plain</option><option value="50">50 json</option><option value="60">60 cbor</option><option value="40">40 link-format</option><option value="110">110 senml+json</option></select></div>
+        </div>
+        <div id="c-payload-wrap" hidden>
+            <label class="kern-label" for="c-payload">Payload</label>
+            <textarea class="kern-textarea" id="c-payload" rows="3">{"temp": 21.5}</textarea>
+        </div>
+        <div class="kern-btns"><button class="kern-btn" id="btn-send">Verstuur</button></div>
+    </div>
+    <div id="result"></div>
+</section>
+
+<section data-view="ontdekken" data-label="Ontdekken" data-icon="search">
+    <div class="kern-card">
+        <p>CoAP-servers beschrijven hun resources op <code>/.well-known/core</code> (CoRE Link Format, RFC 6690).</p>
+        <div class="kern-addr" style="margin:0">
+            <input class="kern-input" id="d-host" value="coap://coap.me" autocapitalize="none">
+            <button class="kern-btn kern-fixed" id="btn-discover">Ontdek</button>
+        </div>
+    </div>
+    <div id="resources"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt CoAP?</h4>
+    <div class="kern-card">
+        <p>CoAP is "HTTP voor microcontrollers": REST-methoden (GET/POST/PUT/DELETE) in compacte
+        <strong>binaire</strong> berichten over <strong>UDP</strong> (poort 5683). De header is 4 bytes:</p>
+        <pre class="kern-pre"> Ver|T |TKL   Code      Message ID
+ 01  00 0100  010 00001 0x1234        → CON GET, token 4 bytes
+ + token + opties (delta-gecodeerd) + 0xFF + payload</pre>
+        <table class="kern-kv">
+            <tr><th>CON / NON</th><td>bevestigd (met ACK + retransmissie) of niet</td></tr>
+            <tr><th>Piggybacked</th><td>antwoord direct in de ACK</td></tr>
+            <tr><th>Separate</th><td>eerst lege ACK, later een CON met het antwoord</td></tr>
+            <tr><th>Block1/Block2</th><td>grote payloads in blokken van 16–1024 bytes (RFC 7959)</td></tr>
+        </table>
+        <p>De PHP-brug <code>api/coap.php</code> doet dit allemaal; het Logboek toont elk datagram in hex.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

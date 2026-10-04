@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>amqp — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="amqp" data-titel="amqp" data-sub="AMQP 0-9-1-client (RabbitMQ, CloudAMQP, LavinMQ)">
+
+<section data-view="publiceren" data-label="Publiceren" data-icon="send">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="p-exchange">Exchange</label><input class="kern-input" id="p-exchange" value="lpw.demo" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:7.5rem"><label class="kern-label" for="p-etype">Type</label>
+                <select class="kern-select" id="p-etype"><option>topic</option><option>direct</option><option>fanout</option></select></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="p-key">Routing-key</label><input class="kern-input" id="p-key" value="sensor.woonkamer.temp" autocapitalize="none"></div>
+            <div><label class="kern-label" for="p-queue">Queue (wordt gebonden)</label><input class="kern-input" id="p-queue" value="lpw.metingen" autocapitalize="none"></div>
+        </div>
+        <label class="kern-label" for="p-bind">Binding-key (topic: <code>*</code> = één woord, <code>#</code> = nul of meer)</label>
+        <input class="kern-input" id="p-bind" value="sensor.#" autocapitalize="none">
+        <label class="kern-label" for="p-body">Bericht</label>
+        <textarea class="kern-textarea" id="p-body" rows="3">{"sensor":"woonkamer","temp":21.4,"eenheid":"C"}</textarea>
+        <label class="kern-muted" style="display:flex;gap:.4rem;align-items:center;margin-top:.3rem"><input type="checkbox" id="p-persistent" checked> persistent (delivery-mode 2)</label>
+        <div class="kern-btns"><button class="kern-btn" id="btn-publish">Publiceren</button><button class="kern-btn kern-btn--ghost" id="btn-burst">5 metingen</button></div>
+    </div>
+    <div id="pub-result"></div>
+</section>
+
+<section data-view="ophalen" data-label="Ophalen" data-icon="list">
+    <div class="kern-card kern-addr" style="margin-bottom:.6rem">
+        <input class="kern-input" id="g-queue" value="lpw.metingen" autocapitalize="none">
+        <button class="kern-btn kern-fixed" id="btn-get">Basic.Get ×5</button>
+    </div>
+    <div id="messages"></div>
+</section>
+
+<section data-view="verbinding" data-label="Verbinding" data-icon="key">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="c-host">Broker</label><input class="kern-input" id="c-host" placeholder="jouw-instantie.rmq.cloudamqp.com" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:5.5rem"><label class="kern-label" for="c-port">Poort</label><input class="kern-input" id="c-port" value="5672" inputmode="numeric"></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="c-user">Gebruiker</label><input class="kern-input" id="c-user" value="guest" autocapitalize="none"></div>
+            <div><label class="kern-label" for="c-pass">Wachtwoord</label><input class="kern-input" id="c-pass" type="password" value="guest"></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="c-vhost">Virtual host</label><input class="kern-input" id="c-vhost" value="/" autocapitalize="none"></div>
+            <label class="kern-muted kern-fixed" style="display:flex;gap:.35rem;align-items:center;padding-bottom:.4rem"><input type="checkbox" id="c-tls"> TLS (5671)</label>
+        </div>
+        <div class="kern-btns"><button class="kern-btn" id="btn-connect">Verbinden &amp; testen</button></div>
+        <p class="kern-note">Gratis broker: maak een "Little Lemur"-instantie op <a class="kern-link" href="https://www.cloudamqp.com/" target="_blank" rel="noopener">CloudAMQP</a>
+        en vul host, gebruiker, wachtwoord en vhost (= gebruikersnaam) in, met TLS aan. Instellingen blijven in deze browser.</p>
+    </div>
+    <div id="server"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt AMQP 0-9-1?</h4>
+    <div class="kern-card">
+        <p>Producers publiceren naar een <strong>exchange</strong> met een <strong>routing-key</strong>; de exchange
+        routeert naar de <strong>queues</strong> die eraan gebonden zijn. Consumers halen berichten uit queues en
+        bevestigen ze (<em>ack</em>).</p>
+        <pre class="kern-pre">producer ─(rk: sensor.woonkamer.temp)→ [exchange lpw.demo, topic]
+                                          │ binding "sensor.#"
+                                          ▼
+                                   [queue lpw.metingen] → consumer (Basic.Get + Ack)</pre>
+        <p>Alles gaat in binaire <em>frames</em> (type, kanaal, lengte, payload, <code>0xCE</code>). Deze demo
+        laat de PHP-brug <code>api/amqp.php</code> de complete handshake doen (Start → StartOk met SASL PLAIN →
+        Tune → Open), en gebruikt <strong>publisher confirms</strong> zodat je zeker weet dat de broker het
+        bericht heeft. Onrouteerbare berichten komen terug als <code>Basic.Return 312 NO_ROUTE</code>.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

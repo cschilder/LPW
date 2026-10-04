@@ -1008,3 +1008,15 @@ body {
 .kern-card p, .kern-card h5 { padding-top: 0 !important; margin-bottom: .25rem; }
 .gemtext p:empty { min-height: .45em; margin: 0; }
 .gemtext h1, .gemtext h2, .gemtext h3 { margin-top: .5rem; }
+
+/* Watervaldiagram (http2) */
+.wf { margin-top: .5rem; }
+.wf__row { display: grid; grid-template-columns: 6.5rem 1fr 3.4rem; gap: .4rem; align-items: center; font-size: .74rem; margin: .18rem 0; }
+.wf__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-family: 'Ubuntu Mono', monospace; }
+.wf__track { position: relative; height: 12px; background: var(--body-bg); border-radius: 3px; }
+.wf__seg { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+.wf__seg--dns { background: #77216F; } .wf__seg--tcp { background: #f99b11; }
+.wf__seg--tls { background: #c7162b; } .wf__seg--wait { background: #AEA79F; } .wf__seg--recv { background: var(--accent); }
+.wf__ms { text-align: right; color: var(--text-muted); }
+.wf__legend { display: flex; flex-wrap: wrap; gap: .7rem; font-size: .7rem; color: var(--text-muted); margin-top: .4rem; }
+.wf__legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: .25rem; vertical-align: -1px; }
