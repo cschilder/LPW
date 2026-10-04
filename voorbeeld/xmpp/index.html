@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>xmpp — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="xmpp" data-titel="xmpp" data-sub="XMPP-chat over WebSocket (RFC 6120 + RFC 7395)">
+
+<section data-view="chat" data-label="Chat" data-icon="chat">
+    <div class="kern-card" id="chat-head"><span class="kern-muted">Niet verbonden — zie het tabblad Account.</span></div>
+    <div class="kern-row" style="margin-bottom:.5rem">
+        <select class="kern-select" id="chat-with"></select>
+    </div>
+    <div id="thread"></div>
+    <div class="kern-card kern-addr" style="margin-top:.5rem">
+        <input class="kern-input" id="chat-text" placeholder="Bericht…">
+        <button class="kern-btn kern-fixed" id="btn-chat-send">Stuur</button>
+    </div>
+</section>
+
+<section data-view="contacten" data-label="Contacten" data-icon="user">
+    <div class="kern-card kern-addr">
+        <input class="kern-input" id="add-jid" placeholder="iemand@server.nl" autocapitalize="none">
+        <button class="kern-btn kern-fixed" id="btn-add">Toevoegen</button>
+    </div>
+    <h4 class="p-muted-heading">Roster</h4>
+    <div id="roster"></div>
+</section>
+
+<section data-view="account" data-label="Account" data-icon="key">
+    <div class="kern-card">
+        <label class="kern-label" for="x-ws">WebSocket-endpoint van de server</label>
+        <input class="kern-input" id="x-ws" placeholder="wss://server.nl/xmpp-websocket" autocapitalize="none" spellcheck="false">
+        <div class="kern-row">
+            <div><label class="kern-label" for="x-user">Gebruikersnaam</label><input class="kern-input" id="x-user" autocapitalize="none"></div>
+            <div><label class="kern-label" for="x-domain">Domein</label><input class="kern-input" id="x-domain" autocapitalize="none"></div>
+        </div>
+        <label class="kern-label" for="x-pass">Wachtwoord</label><input class="kern-input" id="x-pass" type="password">
+        <div class="kern-btns">
+            <button class="kern-btn" id="btn-x-login">Inloggen</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-x-register">Account aanmaken op server (XEP-0077)</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-x-logout" hidden>Afmelden</button>
+        </div>
+        <p class="kern-note">Gebruik een server met WebSocket-ondersteuning, bijv. een eigen Prosody/ejabberd, of een
+        publieke server die <code>/xmpp-websocket</code> aanbiedt. Je JID wordt <code>gebruikersnaam@domein</code>;
+        het wachtwoord blijft in deze browser.</p>
+    </div>
+    <div id="session"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt XMPP?</h4>
+    <div class="kern-card">
+        <p>XMPP (Jabber) is een open, gefedereerd chatprotocol: een stroom XML-<em>stanza's</em> tussen client en
+        server. Er zijn drie soorten: <code>&lt;message&gt;</code>, <code>&lt;presence&gt;</code> en
+        <code>&lt;iq&gt;</code> (vraag/antwoord). Deze demo praat er rechtstreeks vanuit je browser mee via
+        <strong>XMPP-over-WebSocket</strong> (RFC 7395) — geen PHP-brug nodig.</p>
+        <table class="kern-kv">
+            <tr><th>1 · open</th><td><code>&lt;open to="domein"/&gt;</code> → server stuurt features</td></tr>
+            <tr><th>2 · SASL</th><td>SCRAM-SHA-1/-256 (wachtwoord gaat nooit over de lijn) of PLAIN</td></tr>
+            <tr><th>3 · bind</th><td>de server kent een resource toe → volledige JID</td></tr>
+            <tr><th>4 · presence</th><td>je bent online; contacten zien je status</td></tr>
+            <tr><th>Registreren</th><td>XEP-0077 in-band registratie maakt een account op de server zelf</td></tr>
+        </table>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

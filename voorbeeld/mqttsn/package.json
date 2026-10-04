@@ -1,0 +1,8 @@
+{
+  "name": "lpw-mqttsn-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MQTT-SN 1.2-gateway (UDP) naar een MQTT-broker, voor de LPW MQTT-SN-demo",
+  "scripts": { "gateway": "node gateway.js" },
+  "dependencies": { "mqtt": "^5.16.0" }
+}

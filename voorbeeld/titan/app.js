@@ -18,6 +18,7 @@
       <p class="kern-muted">${d.bytes} bytes geüpload in ${d.ms} ms · ${esc(d.conn.tls || '')}</p>
       ${target ? `<div class="kern-btns"><a class="kern-btn" href="../gemini/?url=${encodeURIComponent(target)}">Open ${esc(target)} in de Gemini-demo →</a></div>` : ''}
     </div>`;
+    Kern.reveal('#result');
     if (ok) Kern.toast('Geüpload', target || url, 'ok');
   });
 

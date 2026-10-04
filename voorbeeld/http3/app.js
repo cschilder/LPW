@@ -23,6 +23,7 @@
       d.curlHttp3 ? (d.h3request.status ? `<p>Status ${d.h3request.status} via HTTP/3 in ${d.h3request.ms} ms.</p>` : `<p>${esc(d.h3request.error)}</p>`)
         : '<p style="margin:0">De curl op deze server is niet met HTTP/3 gebouwd (gebruikelijk op gedeelde hosting). Stap 1 en 2 bewijzen wel dat de site QUIC/HTTP-3 spreekt.</p>');
     $('#steps').innerHTML = out;
+    Kern.reveal('#steps');
   });
   Kern.onStart(() => { if (Kern.param('url')) $('#q-url').value = Kern.param('url'); });
 })();

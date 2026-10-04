@@ -20,6 +20,7 @@
   }
   function showResult(d, label) {
     const r = d.response;
+    Kern.reveal('#state');
     $('#result').innerHTML = `<div class="kern-card"><h5>${esc(label)} → <span class="kern-badge ${r.code.startsWith('2') ? 'kern-badge--ok' : 'kern-badge--err'}">${esc(r.code)} ${esc(r.codeName)}</span></h5>
       ${d.payload ? `<p class="kern-muted">Link-format payload:</p><pre class="kern-pre">${esc(d.payload)}</pre>` : ''}
       <p class="kern-muted">${r.packets} datagram(men) · ${d.ms} ms · zie het Logboek voor de ruwe CoAP-berichten</p></div>`;

@@ -1456,6 +1456,7 @@ from cyclonedds.sub import DataReader, Subscriber
 from cyclonedds.pub import DataWriter, Publisher
 from cyclonedds.topic import Topic
 from cyclonedds.idl import IdlStruct
+from cyclonedds.util import duration
 from dataclasses import dataclass
 import time
 
@@ -1470,7 +1471,7 @@ participant = DomainParticipant(0)
 
 # Topic definiëren
 qos = Qos(
-    Policy.Reliability.Reliable(max_blocking_time=100),
+    Policy.Reliability.Reliable(max_blocking_time=duration(milliseconds=100)),
     Policy.Durability.TransientLocal,
     Policy.History.KeepLast(10)
 )

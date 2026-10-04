@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>mqttsn — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="mqttsn" data-titel="mqttsn" data-sub="MQTT-SN-sensor (MQTT for Sensor Networks, UDP)">
+
+<section data-view="sessie" data-label="Sessie" data-icon="radio">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="s-host">MQTT-SN-gateway</label><input class="kern-input" id="s-host" placeholder="jouw-gateway.nl" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:5.5rem"><label class="kern-label" for="s-port">UDP-poort</label><input class="kern-input" id="s-port" value="1884" inputmode="numeric"></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="s-client">Client-ID</label><input class="kern-input" id="s-client" autocapitalize="none"></div>
+            <div class="kern-fixed" style="width:5.5rem"><label class="kern-label" for="s-qos">QoS</label>
+                <select class="kern-select" id="s-qos"><option value="0">0</option><option value="1" selected>1</option></select></div>
+        </div>
+        <label class="kern-label" for="s-topic">Topic</label><input class="kern-input" id="s-topic" value="lpw/sensor/temperatuur" autocapitalize="none">
+        <label class="kern-label" for="s-msgs">Metingen (één per regel)</label>
+        <textarea class="kern-textarea" id="s-msgs" rows="3">21.4
+21.6
+21.9</textarea>
+        <div class="kern-btns">
+            <button class="kern-btn" id="btn-pub">Publiceren</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-subscr">Abonneren (4 s luisteren)</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-qosm1">QoS −1 (zonder verbinding)</button>
+        </div>
+    </div>
+    <div id="session"></div>
+</section>
+
+<section data-view="pakketten" data-label="Pakketten" data-icon="cube">
+    <div class="kern-card">
+        <h5>Pakketbouwer</h5>
+        <div class="kern-row">
+            <div><label class="kern-label" for="b-type">Type</label>
+                <select class="kern-select" id="b-type"><option>CONNECT</option><option>REGISTER</option><option selected>PUBLISH</option><option>SUBSCRIBE</option><option>PINGREQ</option><option>DISCONNECT</option></select></div>
+            <div class="kern-fixed" style="width:5.5rem"><label class="kern-label" for="b-qos">QoS</label>
+                <select class="kern-select" id="b-qos"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="3">−1</option></select></div>
+        </div>
+        <div class="kern-row">
+            <div><label class="kern-label" for="b-tid">Topic-ID / msg-ID</label><input class="kern-input" id="b-tid" value="10" inputmode="numeric"></div>
+            <div><label class="kern-label" for="b-text">Topicnaam / client-ID / data</label><input class="kern-input" id="b-text" value="21.5"></div>
+        </div>
+    </div>
+    <div class="kern-card"><pre class="kern-pre" id="b-hex"></pre><table class="kern-kv" id="b-fields"></table></div>
+    <div class="kern-card">
+        <h5>Vergelijking met gewone MQTT</h5>
+        <div id="compare"></div>
+    </div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt MQTT-SN?</h4>
+    <div class="kern-card">
+        <p>MQTT-SN (v1.2) is MQTT voor sensoren op batterijen en radionetwerken (Zigbee, 6LoWPAN, LoRa): het draait
+        over <strong>UDP</strong> en vervangt lange topicnamen door 2-byte <strong>topic-ID's</strong>. Een
+        <strong>gateway</strong> vertaalt naar een gewone MQTT-broker.</p>
+        <pre class="kern-pre">sensor ──UDP/MQTT-SN──▶ gateway ──TCP/MQTT──▶ broker ──▶ dashboards, apps</pre>
+        <table class="kern-kv">
+            <tr><th>REGISTER</th><td>topicnaam → topic-ID (één keer); daarna alleen het ID</td></tr>
+            <tr><th>QoS −1</th><td>publiceren zónder CONNECT, met een vooraf afgesproken topic-ID — ideaal voor sensoren die maar af en toe wakker worden</td></tr>
+            <tr><th>Slapende clients</th><td>DISCONNECT met duur: de gateway buffert berichten tot de sensor wakker wordt</td></tr>
+        </table>
+        <h5 style="margin-top:.6rem">Eigen gateway draaien</h5>
+        <p>Publieke MQTT-SN-gateways bestaan nauwelijks. Deze repo bevat een kleine gateway (Node.js) die je op je
+        eigen pc of VPS kunt draaien (niet op gedeelde webhosting):</p>
+        <pre class="kern-pre">cd voorbeeld/mqttsn
+npm install
+BROKER=mqtt://broker.hivemq.com:1883 node gateway.js   # luistert op udp/1884</pre>
+        <p>De PHP-brug <code>api/mqttsn.php</code> stuurt de binaire pakketten; het Logboek toont ze in hex.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

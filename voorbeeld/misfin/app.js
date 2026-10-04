@@ -41,6 +41,7 @@
     const ok = d.status === 20;
     $('#result').innerHTML = `<div class="kern-card"><span class="kern-badge ${ok ? 'kern-badge--ok' : 'kern-badge--err'}">${d.status} ${STATUS[d.status] || ''}</span>
       ${ok ? `vingerafdruk ontvanger <code>${esc(d.meta.slice(0, 23))}…</code>` : esc(d.meta)}<p class="kern-muted">${d.bytes} bytes · ${d.ms} ms</p></div>`;
+    Kern.reveal('#result');
     const sent = Kern.get('sent', []);
     sent.unshift({ to, message, status: d.status, ts: Date.now() });
     Kern.set('sent', sent.slice(0, 50));

@@ -29,6 +29,7 @@
       contentType: /^\s*[{[]/.test(body) ? 'application/json' : 'text/plain', persistent: $('#p-persistent').checked });
   }
   function showPub(d) {
+    Kern.reveal('#pub-result');
     const ok = d.confirmed && !d.returned;
     $('#pub-result').innerHTML = `<div class="kern-card"><h5><span class="kern-badge ${ok ? 'kern-badge--ok' : 'kern-badge--warn'}">${ok ? 'Basic.Ack — broker heeft het' : d.returned ? 'Basic.Return ' + esc(d.returned) : 'Nack'}</span></h5>
       <table class="kern-kv"><tr><th>Exchange → routing-key</th><td>${esc(d.published.exchange)} → ${esc(d.published.routingKey)}</td></tr>

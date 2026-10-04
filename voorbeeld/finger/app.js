@@ -15,6 +15,7 @@
     let d;
     try { d = await Kern.api('finger', { user, host, verbose }); }
     catch (e) { $('#result').innerHTML = `<div class="kern-card"><span class="kern-badge kern-badge--err">Fout</span> ${esc(e.message)}</div>`; return; }
+    Kern.reveal('#result');
     const recent = [d.query, ...Kern.get('recent', []).filter((q) => q !== d.query)].slice(0, 12);
     Kern.set('recent', recent);
     $('#result').innerHTML = `

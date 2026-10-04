@@ -1020,3 +1020,7 @@ body {
 .wf__ms { text-align: right; color: var(--text-muted); }
 .wf__legend { display: flex; flex-wrap: wrap; gap: .7rem; font-size: .7rem; color: var(--text-muted); margin-top: .4rem; }
 .wf__legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: .25rem; vertical-align: -1px; }
+.kern-select { min-width: 0; max-width: 100%; }
+.kern-fixed .kern-select, .kern-fixed .kern-input { width: 100%; }
+
+.conn-dot--idle { background: #AEA79F; }

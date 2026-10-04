@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>nostr — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="nostr" data-titel="nostr" data-sub="Nostr-client: sleutels, notes en relays (NIP-01)">
+
+<section data-view="feed" data-label="Feed" data-icon="chat">
+    <div class="kern-card">
+        <textarea class="kern-textarea" id="n-text" rows="3" placeholder="Wat speelt er? Gebruik #hashtags.">Hallo Nostr! Geschreven in de LPW-demo, ondertekend met Schnorr (secp256k1). #lpw</textarea>
+        <div class="kern-btns"><button class="kern-btn" id="btn-post">Publiceren</button>
+            <span class="kern-muted" id="post-status"></span></div>
+    </div>
+    <div class="kern-card kern-addr" style="margin-bottom:.5rem">
+        <input class="kern-input" id="n-filter" value="#lpw" autocapitalize="none" placeholder="#hashtag of leeg voor alles">
+        <button class="kern-btn kern-fixed" id="btn-sub">Abonneren</button>
+    </div>
+    <p class="kern-muted" id="feed-status"></p>
+    <div id="feed"></div>
+</section>
+
+<section data-view="sleutels" data-label="Sleutels" data-icon="key">
+    <div class="kern-card" id="keys"></div>
+    <div class="kern-card">
+        <h5>Profiel (kind 0)</h5>
+        <label class="kern-label" for="p-name">Naam</label><input class="kern-input" id="p-name">
+        <label class="kern-label" for="p-about">Over mij</label><input class="kern-input" id="p-about" value="Ontdekt Nostr via de LPW-demo">
+        <div class="kern-btns"><button class="kern-btn" id="btn-profile">Profiel publiceren</button></div>
+    </div>
+    <div class="kern-card">
+        <h5>Andere sleutel gebruiken</h5>
+        <label class="kern-label" for="k-import">nsec importeren</label><input class="kern-input" id="k-import" type="password" placeholder="nsec1…">
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost" id="btn-import">Importeren</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-newkey">Nieuwe sleutel genereren</button></div>
+    </div>
+</section>
+
+<section data-view="relays" data-label="Relays" data-icon="radio">
+    <div class="kern-card kern-addr">
+        <input class="kern-input" id="r-add" placeholder="wss://relay.voorbeeld.nl" autocapitalize="none">
+        <button class="kern-btn kern-fixed" id="btn-relay-add">Toevoegen</button>
+    </div>
+    <div id="relays"></div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt Nostr?</h4>
+    <div class="kern-card">
+        <p>Nostr heeft geen accounts en geen centrale server: je identiteit is een <strong>sleutelpaar</strong>
+        (secp256k1). Elk bericht is een JSON-<em>event</em> dat je met je privésleutel ondertekent (Schnorr,
+        BIP-340) en naar een of meer <strong>relays</strong> stuurt. Iedereen kan de handtekening controleren.</p>
+        <pre class="kern-pre">["EVENT", {id, pubkey, created_at, kind, tags, content, sig}]   → relay
+["OK", id, true, ""]                                          ← relay
+["REQ", "sub1", {"kinds":[1], "#t":["lpw"], "limit":30}]     → relay
+["EVENT", "sub1", {...}] … ["EOSE", "sub1"]                  ← relay</pre>
+        <table class="kern-kv">
+            <tr><th>kind 0</th><td>profiel (naam, over mij)</td></tr>
+            <tr><th>kind 1</th><td>tekstnotitie</td></tr>
+            <tr><th>npub / nsec</th><td>leesbare bech32-vorm van publieke/privésleutel (NIP-19)</td></tr>
+        </table>
+        <p class="kern-note">Deze app praat rechtstreeks via WebSocket met de relays — geen PHP-brug. Je
+        privésleutel staat alleen in deze browser. Heb je een NIP-07-extensie (Alby, nos2x), dan wordt die gebruikt.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="nostr.bundle.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

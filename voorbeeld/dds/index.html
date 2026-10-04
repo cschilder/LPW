@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>dds — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="dds" data-titel="dds" data-sub="DDS-QoS-simulator + echte RTPS-bytes">
+
+<section data-view="simulatie" data-label="Simulatie" data-icon="cube">
+    <div class="kern-note">Simulator: DDS gebruikt UDP-multicast tussen processen op één netwerk — dat kan niet in een browser of
+    op webhosting. De QoS-regels, matching en de RTPS-bytes hieronder volgen wél exact de OMG-specificatie.
+    Het echte Python-programma staat bij <a class="kern-link" data-tab="echt">Echt draaien</a>.</div>
+    <div class="kern-card">
+        <h5>Topic <code>Sensor/Temperatuur</code> · DataWriter</h5>
+        <div class="kern-row">
+            <div><label class="kern-label" for="w-rel">Reliability</label><select class="kern-select" id="w-rel"><option>RELIABLE</option><option>BEST_EFFORT</option></select></div>
+            <div><label class="kern-label" for="w-dur">Durability</label><select class="kern-select" id="w-dur"><option>TRANSIENT_LOCAL</option><option>VOLATILE</option></select></div>
+            <div class="kern-fixed" style="width:6rem"><label class="kern-label" for="w-depth">KEEP_LAST</label><input class="kern-input" id="w-depth" value="5" inputmode="numeric"></div>
+        </div>
+        <label class="kern-label" for="loss">Pakketverlies op het netwerk: <strong id="loss-v"></strong></label>
+        <input type="range" id="loss" min="0" max="60" value="25" style="width:100%">
+        <div class="kern-btns">
+            <button class="kern-btn" id="btn-pub">Publiceer sample</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-stream">▶ Stroom (1/s)</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-late">+ Late joiner</button>
+            <button class="kern-btn kern-btn--ghost" id="btn-reset">Reset</button>
+        </div>
+        <p class="kern-muted" id="w-status" style="margin:.4rem 0 0"></p>
+    </div>
+    <h4 class="p-muted-heading">DataReaders</h4>
+    <div id="readers"></div>
+</section>
+
+<section data-view="rtps" data-label="RTPS" data-icon="list">
+    <div class="kern-card">
+        <p>Zo ziet het laatste sample eruit als RTPS 2.5-bericht op de draad, precies zoals Eclipse Cyclone DDS het
+        verstuurt (gecontroleerd met een tcpdump van een echte Cyclone-schrijver; daar volgt nog een <code>HEARTBEAT</code>):
+        een RTPS-header, een <code>INFO_TS</code>-submessage met de tijd en een <code>DATA</code>-submessage met de
+        CDR-geserialiseerde struct.</p>
+        <pre class="kern-pre" id="rtps-hex"></pre>
+    </div>
+    <div class="kern-card"><table class="kern-kv" id="rtps-fields"></table></div>
+</section>
+
+<section data-view="echt" data-label="Echt draaien" data-icon="send">
+    <div class="kern-card">
+        <p>Op je eigen computer (Linux/macOS/Windows) met Python en Eclipse Cyclone DDS:</p>
+        <pre class="kern-pre">pip install cyclonedds
+python dds_demo.py sub &amp;     # lezer (TRANSIENT_LOCAL, RELIABLE)
+python dds_demo.py pub       # schrijver</pre>
+        <pre class="kern-pre" id="py"></pre>
+        <p class="kern-muted">Start de lezer ná de schrijver en je ziet de late-joiner-geschiedenis (TRANSIENT_LOCAL) — precies
+        zoals in de simulator. Met <code>tcpdump -i any -X udp portrange 7400-7500</code> zie je de RTPS-bytes.</p>
+        <p class="kern-note">Twee valkuilen die deze demo zelf tegenkwam: (1) <code>max_blocking_time</code> is in
+        nanoseconden — gebruik <code>duration(milliseconds=…)</code>; (2) Cyclone levert late joiners maar zoveel
+        geschiedenis als <code>DurabilityService.history</code> toestaat (standaard 1). Zonder multicast (bijv. in
+        containers of over VPN) zet je discovery op unicast:<br>
+        <code>export CYCLONEDDS_URI='&lt;CycloneDDS&gt;&lt;Domain&gt;&lt;General&gt;&lt;AllowMulticast&gt;false&lt;/AllowMulticast&gt;&lt;/General&gt;&lt;Discovery&gt;&lt;Peers&gt;&lt;Peer address="127.0.0.1"/&gt;&lt;/Peers&gt;&lt;ParticipantIndex&gt;auto&lt;/ParticipantIndex&gt;&lt;/Discovery&gt;&lt;/Domain&gt;&lt;/CycloneDDS&gt;'</code></p>
+    </div>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt DDS?</h4>
+    <div class="kern-card">
+        <p>DDS (Data Distribution Service, OMG) is publish/subscribe <strong>zonder broker</strong>: deelnemers vinden
+        elkaar via multicast-<em>discovery</em> en sturen data rechtstreeks met het wire-protocol <strong>RTPS</strong>.
+        Gebruikt in ROS 2, defensie, luchtvaart en autonome voertuigen.</p>
+        <table class="kern-kv">
+            <tr><th>Reliability</th><td>BEST_EFFORT (verlies is verlies) of RELIABLE (HEARTBEAT/ACKNACK, herverzending)</td></tr>
+            <tr><th>Durability</th><td>VOLATILE (alleen nieuwe data) of TRANSIENT_LOCAL (late joiners krijgen geschiedenis)</td></tr>
+            <tr><th>History</th><td>KEEP_LAST n: hoeveel samples de schrijver bewaart</td></tr>
+            <tr><th>Request vs offered</th><td>Een lezer mag nooit méér eisen dan de schrijver biedt (RELIABLE-lezer + BEST_EFFORT-schrijver = geen match)</td></tr>
+        </table>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

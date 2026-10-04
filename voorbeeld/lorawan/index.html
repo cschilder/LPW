@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>lorawan — LPW-demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://assets.ubuntu.com/v1/vanilla_framework_version_4.59.0.min.css">
+    <link rel="stylesheet" href="../_kern/css/kern.css">
+</head>
+<body data-app="lorawan" data-titel="lorawan" data-sub="LoRaWAN-pakketten: echte crypto, MIC en airtime">
+
+<section data-view="uplink" data-label="Uplink" data-icon="radio">
+    <div class="kern-card">
+        <h5>Sensor (applicatiepayload)</h5>
+        <label class="kern-label" for="u-temp">Temperatuur: <strong id="u-temp-v"></strong></label>
+        <input type="range" id="u-temp" min="-20" max="45" step="0.1" value="21.5" style="width:100%">
+        <label class="kern-label" for="u-hum">Luchtvochtigheid: <strong id="u-hum-v"></strong></label>
+        <input type="range" id="u-hum" min="0" max="100" step="0.5" value="65" style="width:100%">
+        <label class="kern-label" for="u-bat">Batterij: <strong id="u-bat-v"></strong></label>
+        <input type="range" id="u-bat" min="0" max="100" step="1" value="85" style="width:100%">
+    </div>
+    <div class="kern-card">
+        <h5>Apparaat (ABP-sessie)</h5>
+        <div class="kern-row">
+            <div><label class="kern-label" for="u-devaddr">DevAddr</label><input class="kern-input" id="u-devaddr" value="26011BDA"></div>
+            <div class="kern-fixed" style="width:5.5rem"><label class="kern-label" for="u-fcnt">FCnt</label><input class="kern-input" id="u-fcnt" value="42" inputmode="numeric"></div>
+            <div class="kern-fixed" style="width:5rem"><label class="kern-label" for="u-fport">FPort</label><input class="kern-input" id="u-fport" value="2" inputmode="numeric"></div>
+        </div>
+        <label class="kern-label" for="u-nwk">NwkSKey</label><input class="kern-input" id="u-nwk" value="44024241ED4CE9A68C6A8BC055233FD3" spellcheck="false">
+        <label class="kern-label" for="u-app">AppSKey</label><input class="kern-input" id="u-app" value="EC925802AE430CA77FD3DD73CB2CC588" spellcheck="false">
+        <div class="kern-btns"><button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-keys">Willekeurige sleutels</button>
+            <button class="kern-btn kern-btn--ghost kern-btn--small" id="btn-next">FCnt + 1</button></div>
+    </div>
+    <div id="frame"></div>
+</section>
+
+<section data-view="decoder" data-label="Decoder" data-icon="search">
+    <div class="kern-card">
+        <p>Plak een PHYPayload (hex of base64), bijvoorbeeld uit de "Live data" van The Things Network of
+        de gateway-logs, en controleer de MIC en ontsleutel de payload.</p>
+        <label class="kern-label" for="d-phy">PHYPayload</label>
+        <input class="kern-input" id="d-phy" value="QPF9vkkAAgABlUN4disR/w0=" spellcheck="false">
+        <label class="kern-label" for="d-nwk">NwkSKey</label><input class="kern-input" id="d-nwk" value="44024241ED4CE9A68C6A8BC055233FD3" spellcheck="false">
+        <label class="kern-label" for="d-app">AppSKey</label><input class="kern-input" id="d-app" value="EC925802AE430CA77FD3DD73CB2CC588" spellcheck="false">
+        <div class="kern-btns"><button class="kern-btn" id="btn-decode">Decoderen</button></div>
+    </div>
+    <div id="decoded"></div>
+</section>
+
+<section data-view="airtime" data-label="Airtime" data-icon="gauge">
+    <div class="kern-card">
+        <div class="kern-row">
+            <div><label class="kern-label" for="a-pl">FRMPayload (bytes)</label><input class="kern-input" id="a-pl" value="5" inputmode="numeric"></div>
+            <div><label class="kern-label" for="a-bw">Bandbreedte</label><select class="kern-select" id="a-bw"><option value="125">125 kHz</option><option value="250">250 kHz</option></select></div>
+        </div>
+        <p class="kern-muted">PHYPayload = 13 bytes overhead (MHDR, FHDR, FPort, MIC) + FRMPayload · coderate 4/5 · preamble 8</p>
+    </div>
+    <div class="kern-card"><table class="kern-kv" id="a-table"></table></div>
+    <p class="kern-note">EU868: max. <strong>1% duty cycle</strong> per subband (wettelijk). The Things Network hanteert daarbovenop een
+    <strong>fair-use-limiet van 30 s uplink-airtime per apparaat per dag</strong>.</p>
+</section>
+
+<section data-view="info" data-label="Over" data-icon="info">
+    <h4 class="p-muted-heading">Hoe werkt LoRaWAN?</h4>
+    <div class="kern-card">
+        <p>LoRa is de radiotechniek (chirp spread spectrum, km's bereik, weinig stroom); LoRaWAN is het MAC-protocol
+        erboven. Een sensor zendt een pakket uit; elke gateway binnen bereik stuurt het door naar de netwerkserver.</p>
+        <pre class="kern-pre">PHYPayload = MHDR | DevAddr | FCtrl | FCnt | FPort | FRMPayload | MIC
+                1      4        1      2       1        n         4</pre>
+        <table class="kern-kv">
+            <tr><th>AppSKey</th><td>versleutelt de payload end-to-end (netwerk kan niet meelezen)</td></tr>
+            <tr><th>NwkSKey</th><td>berekent de MIC (AES-CMAC): bewijst echtheid en integriteit</td></tr>
+            <tr><th>FCnt</th><td>teller tegen replay-aanvallen; nooit hergebruiken</td></tr>
+            <tr><th>SF7…SF12</th><td>spreidingsfactor: hoger = verder bereik, maar veel langere airtime</td></tr>
+        </table>
+        <p class="kern-note">Een browser (of webserver) heeft geen LoRa-radio, dus versturen kan alleen met hardware
+        (bijv. een Heltec/TTGO-bordje). Wat hier gebeurt is wél echt: de pakketten zijn byte-voor-byte gelijk aan wat
+        een echte node uitzendt — gecontroleerd tegen de referentiebibliotheek <code>lora-packet</code> — en de decoder
+        werkt op echte pakketten uit TTN.</p>
+    </div>
+</section>
+
+<script src="../_kern/js/kern.js"></script>
+<script src="lorawan.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

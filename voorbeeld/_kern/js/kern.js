@@ -122,7 +122,7 @@
       <header class="app-header">
         <span class="app-header__title"><a class="kern-home" href="../index.html" title="Alle demo's">⌂</a><span id="header-title">${Kern.esc(titel)}</span></span>
         <div class="app-header__right">
-          <span class="app-header__conn"><span class="conn-dot conn-dot--off" id="conn-dot"></span><span id="conn-label">klaar</span></span>
+          <span class="app-header__conn"><span class="conn-dot conn-dot--idle" id="conn-dot"></span><span id="conn-label">klaar</span></span>
           <span class="app-header__user" id="header-user"></span>
           <select class="app-header__theme-select" id="theme-select" title="Thema kiezen">
             <option value="ubuntu">Ubuntu</option><option value="dark">Donker</option>
@@ -268,6 +268,9 @@
     Kern.status('on', data.ms != null ? `${data.ms} ms` : 'online');
     return data;
   };
+
+  // Resultaat in beeld brengen (handig op mobiel: het staat vaak onder het formulier)
+  Kern.reveal = (el) => { const e = typeof el === 'string' ? Kern.$(el) : el; if (e) setTimeout(() => e.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); };
 
   // Invoervraag als kaart (i.p.v. de blokkerende browser-prompt)
   Kern.ask = (label, { secret = false, value = '' } = {}) => new Promise((resolve) => {

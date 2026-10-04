@@ -30,6 +30,7 @@
     if (method === 'POST' || method === 'PUT') { body.payload = $('#c-payload').value; body.format = +$('#c-format').value; }
     const d = await Kern.api('coap', body);
     $('#result').innerHTML = renderResponse(d);
+    Kern.reveal('#result');
     const hist = [url, ...Kern.get('history', []).filter((u) => u !== url)].slice(0, 10);
     Kern.set('history', hist);
   }
