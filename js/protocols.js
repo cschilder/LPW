@@ -102,6 +102,11 @@ apparaten/#              ← # wildcard: alle niveaus
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install paho-mqtt\` (Python) of \`npm install mqtt\` (Node).
+> De code verbindt met de publieke broker \`broker.hivemq.com\` (poort 1883); je ziet
+> elke 10 s je eigen gepubliceerde bericht terugkomen omdat je op hetzelfde topic
+> geabonneerd bent. Een complete app staat in de map \`voorbeeld/mqtt/\` van deze repo.
+
 ### Python (paho-mqtt)
 \`\`\`python
 import paho.mqtt.client as mqtt
@@ -278,6 +283,10 @@ coap://sensor.local:5683/v1/temperatuur?unit=celsius
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install aiocoap\` (Python) of \`npm install coap\` (Node).
+> De client hieronder praat met de publieke CoAP-testserver \`coap.me\`: de resource
+> \`/hello\` antwoordt met de payload \`world\`.
+
 ### Python (aiocoap)
 \`\`\`python
 import asyncio
@@ -288,7 +297,7 @@ async def lees_sensor():
 
     request = aiocoap.Message(
         code=aiocoap.GET,
-        uri='coap://sensor.local/temperatuur'
+        uri='coap://coap.me/hello'      # publieke CoAP-testserver → "world"
     )
 
     try:
@@ -326,17 +335,17 @@ asyncio.run(lees_sensor())
 \`\`\`javascript
 const coap = require('coap');
 
-// CoAP GET request
+// CoAP GET request naar de publieke testserver coap.me (/hello → "world")
 const req = coap.request({
-  hostname: 'sensor.local',
-  pathname: '/temperatuur',
-  method: 'GET',
-  observe: true   // Observe-extensie: push-updates ontvangen
+  hostname: 'coap.me',
+  pathname: '/hello',
+  method: 'GET'
 });
 
 req.on('response', (res) => {
+  console.log('Code:', res.code);            // 2.05
   res.on('data', (chunk) => {
-    console.log('Sensordata:', chunk.toString());
+    console.log('Payload:', chunk.toString()); // world
   });
 });
 
@@ -463,10 +472,15 @@ Bekende sub-protocollen: \`mqtt\`, \`stomp\`, \`wamp\`, \`graphql-ws\``,
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — de browsercode werkt direct tegen de publieke
+> echo-server \`wss://echo.websocket.events\` (stuurt elk bericht terug). Plak het
+> in de console van een tab (F12). Voor de Node-server: \`npm install ws && node server.js\`.
+> Een complete, werkende app staat in de map \`voorbeeld/websocket/\` van deze repo.
+
 ### Browser (native JavaScript)
 \`\`\`javascript
-// Verbinding maken
-const ws = new WebSocket('wss://echo.websocket.org');
+// Verbinding maken met een publieke echo-server
+const ws = new WebSocket('wss://echo.websocket.events');
 
 ws.addEventListener('open', () => {
   console.log('Verbonden!');
@@ -643,6 +657,11 @@ Consumers bevestigen berichten met \`basic.ack\`; bij fout kan met \`basic.nack\
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — start lokaal een RabbitMQ-broker en installeer de client:
+> \`docker run -it --rm -p 5672:5672 -p 15672:15672 rabbitmq:3-management\`
+> (beheer-UI op \`http://localhost:15672\`, login \`guest\`/\`guest\`), daarna
+> \`pip install pika\` (Python) of \`npm install amqplib\` (Node).
 
 ### Python (pika — RabbitMQ)
 \`\`\`python
@@ -840,6 +859,10 @@ HTTP/2 gebruikt **ALPN** (Application-Layer Protocol Negotiation) in de TLS-hand
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install "httpx[http2]"\`. De verzoeken gaan naar
+> \`httpbin.org\` (dat HTTP/2 spreekt); \`r.http_version\` print dan \`HTTP/2\`.
+> Snel checken vanaf de CLI: \`curl -I --http2 https://nghttp2.org\`.
+
 ### Python (httpx met HTTP/2)
 \`\`\`python
 import httpx
@@ -987,6 +1010,10 @@ server {
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install aioquic\`. Richt je op een host die HTTP/3
+> aanbiedt, zoals \`cloudflare-quic.com\`. Het eenvoudigst te testen is met cURL
+> (gebouwd met HTTP/3-ondersteuning): \`curl --http3 -I https://cloudflare-quic.com\`.
+
 ### Python (aioquic)
 \`\`\`python
 import asyncio
@@ -1004,7 +1031,7 @@ async def http3_get(url: str):
         verify_peer=False   # Alleen voor test!
     )
 
-    async with connect('example.com', 443, configuration=config) as protocol:
+    async with connect('cloudflare-quic.com', 443, configuration=config) as protocol:
         http = protocol._http
         waiter = asyncio.get_event_loop().create_future()
 
@@ -1014,7 +1041,7 @@ async def http3_get(url: str):
             headers=[
                 (b':method', b'GET'),
                 (b':path', b'/'),
-                (b':authority', b'example.com'),
+                (b':authority', b'cloudflare-quic.com'),
                 (b':scheme', b'https'),
             ],
             end_stream=True
@@ -1029,20 +1056,20 @@ async def http3_get(url: str):
                 print(f"Data: {event.data[:100]}")
                 break
 
-asyncio.run(http3_get('https://example.com'))
+asyncio.run(http3_get('https://cloudflare-quic.com'))
 \`\`\`
 
 ### cURL (HTTP/3 testen)
 \`\`\`bash
-# HTTP/3 forceren
-curl --http3 https://cloudflare.com -v
+# HTTP/3 forceren (cURL moet met HTTP/3-ondersteuning gebouwd zijn)
+curl --http3 -I https://cloudflare-quic.com
 
-# HTTP-versie controleren
-curl -sI https://cloudflare.com | grep -i 'alt-svc\|http'
+# Alt-Svc-header controleren (adverteert h3)
+curl -sI https://cloudflare-quic.com | grep -i 'alt-svc\|http'
 
-# QUIC-statistieken
-curl --http3 --write-out "%{http_version}\n%{time_total}s\n" \
-     -o /dev/null -s https://cloudflare.com
+# Onderhandelde versie + totale tijd tonen
+curl --http3 --write-out "versie=%{http_version} tijd=%{time_total}s\n" \
+     -o /dev/null -s https://cloudflare-quic.com
 \`\`\``
     }
   },
@@ -1156,6 +1183,11 @@ Alle XMPP-communicatie bestaat uit drie basisstanza's:
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install slixmpp\`. Je hebt een XMPP-account nodig;
+> gratis registreren kan op een publieke server zoals \`jabber.de\`, \`xmpp.jp\` of
+> \`404.city\`. Vul je eigen JID en wachtwoord in bij \`XMPPBot(...)\`. De bot
+> antwoordt op elk inkomend chatbericht met \`Echo: ...\`.
+
 ### Python (slixmpp)
 \`\`\`python
 import slixmpp
@@ -1180,7 +1212,7 @@ class XMPPBot(slixmpp.ClientXMPP):
     def stuur_bericht(self, naar, tekst):
         self.send_message(mto=naar, mbody=tekst, mtype='chat')
 
-bot = XMPPBot('bot@jabber.nl', 'wachtwoord')
+bot = XMPPBot('jouw-bot@jabber.de', 'jouw-wachtwoord')
 bot.connect()
 bot.process(forever=False)
 \`\`\``
@@ -1272,6 +1304,11 @@ Body (optioneel)^@
 | \`ack\` | Bevestigingsmodus: \`auto\`, \`client\`, \`client-individual\` |`,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — \`npm install @stomp/stompjs sockjs-client\`. Je hebt een
+> STOMP-broker over WebSocket nodig, bijv. RabbitMQ met de \`rabbitmq_web_stomp\`-plugin
+> op \`ws://localhost:15674/ws\`. Een complete, afhankelijkheidsvrije STOMP-client-app
+> (incl. eigen broker-demo) staat in de map \`voorbeeld/stomp/\` van deze repo.
 
 ### JavaScript (browser — @stomp/stompjs)
 \`\`\`javascript
@@ -1405,6 +1442,11 @@ DomainParticipant A ──multicast──→ DomainParticipant B
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — installeer Eclipse Cyclone DDS en de Python-binding:
+> \`pip install cyclonedds\` (of bouw CycloneDDS en zet \`CYCLONEDDS_HOME\`). DDS werkt
+> peer-to-peer zonder broker: start dit script twee keer (of splits publisher en
+> subscriber) op hetzelfde netwerk en ze vinden elkaar vanzelf via multicast-discovery.
 
 ### Python (CycloneDDS)
 \`\`\`python
@@ -1550,6 +1592,12 @@ Server ← 2.04 Changed
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — \`pip install aiocoap\`. Je kunt tegen de publieke
+> **Eclipse Leshan**-demoserver registreren: \`coap://leshan.eclipseprojects.io:5683\`
+> (bekijk je apparaat daarna in de web-UI op \`https://leshan.eclipseprojects.io\`).
+> Voor een volwaardige client is \`pip install leshan\`/\`wakaama\` of de Leshan
+> Java-client gangbaarder; onderstaande code toont de kale CoAP-basis.
+
 ### Python (aiocoap LwM2M client basis)
 \`\`\`python
 import asyncio
@@ -1597,7 +1645,7 @@ async def registreer_bij_server():
     reg_payload = b"</3/0>,</5/0>"  # Aangeboden objecten
     req = aiocoap.Message(
         code=aiocoap.POST,
-        uri='coap://lwm2m-server.local/rd?ep=lpw-demo-001&lt=3600&b=U',
+        uri='coap://leshan.eclipseprojects.io:5683/rd?ep=lpw-demo-001&lt=3600&b=U',
         payload=reg_payload
     )
     req.opt.content_format = 40  # application/link-format
@@ -1716,13 +1764,19 @@ Sensor → PUBLISH (QoS=-1, topicId=5, data="21.5")
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — MQTT-SN gaat over UDP en heeft een **gateway** nodig die naar
+> een gewone MQTT-broker vertaalt. Start bijv. de Eclipse Paho MQTT-SN Transparent
+> Gateway of RSMB lokaal (poort 1884) met een MQTT-broker (poort 1883) erachter, en
+> zet \`GATEWAY_IP\` op dat adres. Onderstaande code bouwt de CONNECT/PUBLISH-pakketten
+> met de hand zodat je het binaire formaat ziet.
+
 ### Python (paho MQTT-SN via UDP gateway)
 \`\`\`python
 import socket
 import struct
 import time
 
-GATEWAY_IP   = '192.168.1.100'
+GATEWAY_IP   = '127.0.0.1'
 GATEWAY_PORT = 1884
 CLIENT_ID    = b'sensor001'
 
@@ -1865,6 +1919,12 @@ Gateways zijn transparant: end-devices communiceren logisch met de Network Serve
 | ADR | Aan/uit | Adaptive Data Rate (netwerk optimaliseert automatisch) |`,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — LoRaWAN heeft **hardware** nodig (een LoRa-module zoals
+> TTGO/LoPy/Heltec) en een gateway binnen bereik. Maak gratis een applicatie aan op
+> [The Things Network](https://www.thethingsnetwork.org/), neem de OTAA-sleutels over
+> in de code hieronder, en zet de payload-decoder in de TTN-console. De MicroPython-
+> code draait op het toestel; de JavaScript-decoder draait op TTN.
 
 ### MicroPython op LoRa-module (TTGO/LoPy)
 \`\`\`python
@@ -2068,6 +2128,10 @@ Gopher+ (niet-standaard) voegt metatdata toe: \`+INFO\`, \`+ADMIN\`, \`+VIEWS\` 
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — geen installatie nodig. Het haalt het echte publieke
+> Gopher-menu van \`gopher.floodgap.com\` op en print de eerste items. CLI-variant:
+> \`curl gopher://gopher.floodgap.com/\` of \`printf '/\\r\\n' | nc gopher.floodgap.com 70\`.
+
 ### Python — Gopher-client
 \`\`\`python
 import socket
@@ -2242,6 +2306,10 @@ Gemini ondersteunt **TLS client certificates** voor anonieme maar persistente id
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — geen installatie nodig (alleen de Python-standaardbibliotheek).
+> Het haalt de officiële Gemini-capsule \`gemini://geminiprotocol.net/\` op; de
+> header begint met \`20 text/gemini\` gevolgd door de pagina-inhoud.
+
 ### Python — Gemini-client
 \`\`\`python
 import ssl, socket
@@ -2267,8 +2335,8 @@ def gemini_get(url: str) -> tuple[str, str]:
     header, _, inhoud = data.partition(b'\\r\\n')
     return header.decode(), inhoud.decode('utf-8', errors='replace')
 
-header, inhoud = gemini_get('gemini://gemini.circumlunar.space/')
-print('Header:', header)
+header, inhoud = gemini_get('gemini://geminiprotocol.net/')
+print('Header:', header)              # bijv. "20 text/gemini"
 print('Inhoud (eerste 300 tekens):', inhoud[:300])
 \`\`\`
 
@@ -2382,6 +2450,10 @@ Hallo wereld, dit is 42 bytes data!
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — geen installatie nodig. Start eerst de server (poort 300
+> vereist root; kies anders bijv. 3000), maak \`/srv/spartan/index.gmi\` aan, en draai
+> dan de client tegen \`localhost\`. Spartan heeft geen TLS, dus alles is plat te volgen.
 
 ### Python — Spartan-server
 \`\`\`python
@@ -2526,6 +2598,11 @@ titan://host/pad;size=42;mime=text/gemini;token=geheim\\r\\n
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — geen installatie nodig (Python-standaardbibliotheek). Titan is
+> de **upload-tegenhanger van Gemini** (zelfde poort 1965, TLS). Je hebt een
+> Titan-capabele server nodig, bijv. [Molly Brown](https://tildegit.org/solderpunk/molly-brown)
+> of een Station-wiki; vul host, pad en je token in. Een \`2x\`-statusregel = geslaagd.
+
 ### Python — Titan-upload
 \`\`\`python
 import ssl, socket
@@ -2661,6 +2738,11 @@ guppy://host:6775/pad
 
       voorbeeld: `## Voorbeeld
 
+> **Zo draai je dit** — geen installatie nodig. Guppy is Gemini-achtig maar over
+> **UDP** (poort 6775) met eigen betrouwbaarheid (sequentienummers + acks), zoals
+> hieronder. Je hebt een Guppy-server nodig; vul bij \`guppy_get(...)\` de host van een
+> publieke of zelf-gehoste capsule in.
+
 ### Python — Guppy-client
 \`\`\`python
 import socket
@@ -2793,6 +2875,11 @@ bestand="\${CONTENT}\${pad}"
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — geen installatie nodig. Nex is kaler dan Gopher: één regel
+> selector, geen statuscode, geen TLS. Start de server (hieronder) met wat \`.gmi\`-bestanden
+> in \`/srv/nex\` en draai de client tegen \`localhost\`. Publieke Nex-servers vind je via
+> \`nex://nightfall.city/nex/index.txt\`.
 
 ### Python — Nex-client (10 regels)
 \`\`\`python
@@ -2943,6 +3030,11 @@ chmod 644 ~/.plan
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — geen installatie nodig (Python-standaardbibliotheek).
+> Het werkt tegen de echte publieke Finger-server \`sdf.org\` (poort 79). CLI-variant:
+> \`finger @sdf.org\` of \`nc sdf.org 79\`. Niet elke gebruikersnaam bestaat — probeer
+> een lege query voor de serverinfo.
 
 ### Python — Finger-client
 \`\`\`python
@@ -3121,6 +3213,10 @@ echo "Gepubliceerd: \$bericht"
 # ./twtxt-post.sh "Hallo wereld! #test"
 \`\`\`
 
+> **Zo draai je dit** — \`pip install requests\`. Publiceren is gewoon een regel
+> \`<RFC3339-tijd>\\t<bericht>\` aan je \`twtxt.txt\` toevoegen (zie het bash-script).
+> De lezer hieronder haalt echte publieke feeds op en toont een samengevoegde tijdlijn.
+
 ### Python — Twtxt-feed lezen
 \`\`\`python
 import requests, csv
@@ -3148,7 +3244,7 @@ def lees_twtxt(url: str) -> list[dict]:
 
 # Meerdere feeds ophalen en samenvoegen
 feeds = [
-    'https://buckket.org/twtxt.txt',
+    'https://twtxt.net/user/prologic/twtxt.txt',
     'https://www.uninformativ.de/twtxt.txt',
 ]
 
@@ -3286,6 +3382,11 @@ Elk Nostr-event is een JSON-object:
 \`\`\``,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — \`npm install nostr-tools\` (Node/browser) of
+> \`pip install pynostr\` (Python). De code publiceert naar echte publieke relays
+> (\`wss://relay.damus.io\`, \`wss://relay.nostr.band\`) en haalt daarna events met
+> tag \`#lpw\` op. Je nieuw gegenereerde sleutelpaar hoort bij een vers account.
 
 ### JavaScript (nostr-tools)
 \`\`\`javascript
@@ -3447,6 +3548,12 @@ misfin://ontvanger@server.nl korte beschrijving (max ~72 tekens)\\r\\n
 | \`allowed_senders\` | Whitelist of openbaar |`,
 
       voorbeeld: `## Voorbeeld
+
+> **Zo draai je dit** — geen installatie nodig. Misfin is Gemini-achtige e-mail over
+> TLS (poort 1958) en vereist een **client-certificaat** als jouw afzenderidentiteit.
+> Genereer dat eerst: \`openssl req -x509 -newkey rsa:4096 -keyout misfin-key.pem
+> -out misfin-cert.pem -days 3650 -nodes -subj "/CN=jij@jouw-server.nl"\`. Je hebt een
+> Misfin-server als ontvanger nodig. Statusregel \`2x\` = afgeleverd.
 
 ### Python — Misfin-bericht sturen
 \`\`\`python
